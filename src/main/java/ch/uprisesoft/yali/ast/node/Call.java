@@ -29,11 +29,13 @@ public class Call extends Node implements Iterator {
     private final String name;
     private final java.util.List<Node> args;
     private Procedure definition;
+    private Node result;
     
     public Call(String name) {
         super(NodeType.PROCCALL);
         this.name = name;
         this.args = new ArrayList<>();
+        this.result = Node.none();
     }
 
     public Procedure definition() {
@@ -55,6 +57,22 @@ public class Call extends Node implements Iterator {
     public void args(List<Node> args) {
         this.args.clear();
         this.args.addAll(args);
+    }
+    
+    public boolean prepped() {
+        return args.size() < definition.getArity();
+    }
+    
+    public boolean finished() {
+        return result != null;
+    }
+
+    public Node result() {
+        return result;
+    }
+
+    public void result(Node result) {
+        this.result = result;
     }
 
     public String getName() {

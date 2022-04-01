@@ -45,8 +45,10 @@ public class Interpreter implements OutputObserver {
     private List<Tracer> tracers = new ArrayList<>();
 
     private Environment env = new Environment();
-    private CallStack stack = new CallStack();
+//    private CallStack stack = new CallStack();
     private boolean paused = false;
+
+    private java.util.Stack<Call> stack = new java.util.Stack<>();
 
     public Interpreter() {
         env.push(new Scope("global"));
@@ -60,84 +62,70 @@ public class Interpreter implements OutputObserver {
         return tracers;
     }
 
-    public CallStack stack() {
-        return stack;
-    }
-
+//    public CallStack stack() {
+//        return stack;
+//    }
     /**
      * Interpreting functionality, public interface
      */
     public Node run(Node node) {
         tracers.forEach(t -> t.run(node));
-        stack.schedule(node);
 
-        while (stack.hasNext()) {
+        if(!node.type().equals(NodeType.PROCCALL)) {
+            return node;
+        }
+        
+        Call call = node.toProcedureCall();
+        
+        if(!env.defined(call.getName())) {
+            throw new FunctionNotFoundException(call.getName());
+        }
+        
+        call.definition(env.procedure(call.getName()));
+        
+        stack.push(call);
+
+//        stack.schedule(node);
+        while (!stack.empty()) {
             if (paused) {
                 break;
             }
-            Node nextCall = stack.next();
 
-            if (!nextCall.type().equals(NodeType.PROCCALL)) {
-                throw new NodeTypeException(nextCall, nextCall.type(), NodeType.PROCCALL);
-            }
-
-//            apply(nextCall);
-            try {
-                apply(nextCall);
-            } catch (RecursionException re) {
-                resume();
-            }
+            tick();
         }
 
-        return stack.output();
+        return stack.pop().result();
     }
 
-    public Node runBounded(Node node) {
-        tracers.forEach(t -> t.run(node));
-
-        CallStack save = stack;
-        stack = new CallStack();
-
-        Node result = run(node);
-
-        stack = save;
-        return result;
-    }
-
+//    public Node runBounded(Node node) {
+//        tracers.forEach(t -> t.run(node));
+//
+//        CallStack save = stack;
+//        stack = new CallStack();
+//
+//        Node result = run(node);
+//
+//        stack = save;
+//        return result;
+//    }
     public Node resume() {
-        tracers.forEach(t -> t.resume(stack.currentCall()));
+//        tracers.forEach(t -> t.resume(stack.currentCall()));
 //        callDepth = 0;
         paused = false;
 
-        // Check if a call is running already (after pausing the Interpreter)
-        if (stack.currentCall() != null) {
-//            apply(stack.currentCall());
-
-            try {
-                apply(stack.currentCall());
-            } catch (RecursionException re) {
-                resume();
-            }
-        }
-
-        while (stack.hasNext()) {
+        while (!stack.empty()) {
             if (paused) {
                 break;
             }
-//            apply(stack.next());
 
-            try {
-                apply(stack.next());
-            } catch (RecursionException re) {
-                resume();
-            }
+            tick();
         }
 
-        return stack.output();
+        return stack.pop().result();
     }
 
     public void pause() {
-        tracers.forEach(t -> t.pause(stack.currentCall()));
+//        tracers.forEach(t -> t.pause(stack.currentCall()));
         paused = true;
     }
 
@@ -163,7 +151,7 @@ public class Interpreter implements OutputObserver {
 //        return new Parser(this).read(list);
 //    }
     public Node result() {
-        return stack.output();
+        return stack.pop();
     }
 
     public Environment env() {
@@ -177,6 +165,36 @@ public class Interpreter implements OutputObserver {
      * further evaluation (every Procedure needs to be reduced to native calls
      * in the end).
      */
+    public boolean tick() {
+
+        if (paused) {
+            return false;
+        }
+
+        if (stack.empty()) {
+            return false;
+        }
+
+        Node actual = stack.pop();
+
+        if (!actual.type().equals(NodeType.PROCCALL)) {
+            throw new NodeTypeException(actual, actual.type(), NodeType.PROCCALL);
+        }
+        
+        Call call = actual.toProcedureCall();
+        
+        if(call.prepped()) {
+            
+        }
+        
+        if(call.definition().isNative()) {
+            Node result = call.definition().getNativeCall().apply(env.peek(), call.args());
+            call.result(result);
+        } 
+        
+        return false;
+    }
+
     public boolean apply(Node node) {
         boolean recursedCall = false;
         boolean recursedScope = false;
@@ -256,7 +274,7 @@ public class Interpreter implements OutputObserver {
             }
 
             while (stack.hasNext()) {
-                Node line = stack().next();
+                Node line = stack.next();
 
                 // every direct child should be a function call
                 if (!line.type().equals(NodeType.PROCCALL)) {
