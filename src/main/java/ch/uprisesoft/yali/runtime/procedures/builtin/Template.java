@@ -75,7 +75,7 @@ public class Template implements ProcedureProvider {
             }
 
             command += ")";
-            it.continuation().push(it.read(command));
+            it.stack().schedule(it.read(command));
             return Node.none();
 
         } else if (args.get(1).type().equals(NodeType.QUOTE)) {
@@ -104,7 +104,7 @@ public class Template implements ProcedureProvider {
                 command += "(" + runCommand + ") ";
             }
             command += ")";
-            it.continuation().push(it.read(command));
+            it.stack().schedule(it.read(command));
             return Node.none();
 
         } else {

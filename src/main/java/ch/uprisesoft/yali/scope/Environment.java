@@ -20,8 +20,6 @@ import java.util.Map;
 public class Environment {
 
     private List<Scope> scopes = new ArrayList<>();
-    private Map<String, Procedure> procedures = new HashMap<>();
-
     
     /**
      * Scopes
@@ -31,8 +29,23 @@ public class Environment {
         return scopes.get(scopes.size() - 1);
     }
 
-    public void push(Scope scope) {
+    public boolean push(Scope scope) {
+        for(int i = scopes.size() -2; i >= 0; i--) {
+                Scope currentScope = scopes.get(i);
+                if(scope.getScopeName().equals(currentScope.getScopeName())) {
+                    for(int j = scopes.size()-1; j>=i; j--) {
+                        scopes.remove(j);
+                        scopes.add(currentScope);
+                    }
+//                    System.out.println("RECURSION: " + (scopes.size()- i) + " -> " + scopes.get(i).getScopeName());
+                    return true;
+                } else {
+//                     System.out.println("NOT RECURSION: " + currentNode.type());
+                }
+            }
+        
         scopes.add(scope);
+        return false;
     }
 
     public Scope pop() {

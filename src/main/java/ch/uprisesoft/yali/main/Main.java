@@ -58,15 +58,16 @@ public class Main {
         it.loadStdLib(oo, ig);
 //        it.addTracer(new PrintingTracer());
 
-//        String input = "to recurse :i\n"
-//                + "print :i\n"
+        String input = "to recurse :i\n"
+                + "print :i\n"
 //                + "if (:i > 0) [recurse :i + 1]\n"
-////                + "print \"TAIL\n"
-//                + "end\n"
-//                + "\n"
-//                + "recurse 1\n";
-//
-//        Node res = it.run(it.read(input));
+                + "recurse :i + 1\n"
+                + "end\n"
+                + "\n"
+                + "recurse 1\n";
+
+        Node res = it.run(it.read(input));
+        
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("to pausetest").append("\n");
 //        sb.append("if (1 > 0) [pause print \"two]").append("\n");
@@ -103,31 +104,5 @@ public class Main {
 //
 //        Node res = it.run(it.read(input));
 //        it.resume();
-        String input = "[1 two [x y] 3]\n";
-        Node res = it.read(input);
-
-        ch.uprisesoft.yali.ast.node.List l = res.getChildren().get(0).toList();
-        System.out.println("Type: " + l.type());
-        System.out.println(l.toString());
-
-        for (Node n : l.getChildren()) {
-            System.out.println(n.toString());
-
-            if (n.type() == NodeType.LIST) {
-                System.out.println("==============");
-                for (Token t : n.token()) {
-                    System.out.println(t);
-                }
-                System.out.println("==============");
-            }
-
-        }
-
-        System.out.println("Token count: " + l.token().size());
-
-        for (Token t : l.token()) {
-            System.out.println(t);
-        }
-
     }
 }

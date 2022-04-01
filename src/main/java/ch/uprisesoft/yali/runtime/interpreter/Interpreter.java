@@ -19,6 +19,7 @@ import ch.uprisesoft.yali.ast.node.Call;
 import ch.uprisesoft.yali.ast.node.Node;
 import ch.uprisesoft.yali.exception.NodeTypeException;
 import ch.uprisesoft.yali.ast.node.NodeType;
+import ch.uprisesoft.yali.exception.RecursionException;
 import ch.uprisesoft.yali.parser.Parser;
 import ch.uprisesoft.yali.runtime.io.InputGenerator;
 import ch.uprisesoft.yali.runtime.io.OutputObserver;
@@ -46,9 +47,6 @@ public class Interpreter implements OutputObserver {
     private Environment env = new Environment();
     private CallStack stack = new CallStack();
     private boolean paused = false;
-//    private int callDepth = 0;
-//    private Node result = Node.none();
-//    private Iterator<Node> running;
 
     public Interpreter() {
         env.push(new Scope("global"));
@@ -62,7 +60,7 @@ public class Interpreter implements OutputObserver {
         return tracers;
     }
 
-    public CallStack continuation() {
+    public CallStack stack() {
         return stack;
     }
 
@@ -71,7 +69,7 @@ public class Interpreter implements OutputObserver {
      */
     public Node run(Node node) {
         tracers.forEach(t -> t.run(node));
-        stack.push(node);
+        stack.schedule(node);
 
         while (stack.hasNext()) {
             if (paused) {
@@ -83,10 +81,15 @@ public class Interpreter implements OutputObserver {
                 throw new NodeTypeException(nextCall, nextCall.type(), NodeType.PROCCALL);
             }
 
-            apply(nextCall);
+//            apply(nextCall);
+            try {
+                apply(nextCall);
+            } catch (RecursionException re) {
+                resume();
+            }
         }
 
-        return stack.lastResult();
+        return stack.output();
     }
 
     public Node runBounded(Node node) {
@@ -96,7 +99,7 @@ public class Interpreter implements OutputObserver {
         stack = new CallStack();
 
         Node result = run(node);
-        
+
         stack = save;
         return result;
     }
@@ -108,17 +111,29 @@ public class Interpreter implements OutputObserver {
 
         // Check if a call is running already (after pausing the Interpreter)
         if (stack.currentCall() != null) {
-            apply(stack.currentCall());
+//            apply(stack.currentCall());
+
+            try {
+                apply(stack.currentCall());
+            } catch (RecursionException re) {
+                resume();
+            }
         }
 
         while (stack.hasNext()) {
             if (paused) {
                 break;
             }
-            apply(stack.next());
+//            apply(stack.next());
+
+            try {
+                apply(stack.next());
+            } catch (RecursionException re) {
+                resume();
+            }
         }
 
-        return stack.lastResult();
+        return stack.output();
     }
 
     public void pause() {
@@ -135,10 +150,9 @@ public class Interpreter implements OutputObserver {
         Node node = new Parser(this).read(source);
         return node;
     }
-    
+
     public Node read(ch.uprisesoft.yali.ast.node.List list) {
 //        tracers.forEach(t -> t.parse(source));
-        
 
         Node node = new Parser(this).read(list);
         return node;
@@ -149,7 +163,7 @@ public class Interpreter implements OutputObserver {
 //        return new Parser(this).read(list);
 //    }
     public Node result() {
-        return stack.lastResult();
+        return stack.output();
     }
 
     public Environment env() {
@@ -164,20 +178,23 @@ public class Interpreter implements OutputObserver {
      * in the end).
      */
     public boolean apply(Node node) {
+        boolean recursedCall = false;
+        boolean recursedScope = false;
+
         tracers.forEach(t -> t.apply(node));
-        
+
         if (paused) {
             return false;
         }
 
         // First base case: If a Node is not a Procedure call, evaluation is finished
         if (!node.type().equals(NodeType.PROCCALL)) {
-            stack.lastResult(node);
+            stack.output(node);
             return false;
         }
 
         Call call = node.toProcedureCall();
-//        continuation.currentCall(call);
+//        stack.currentCall(call);
 
         if (!env.defined(call.getName())) {
             throw new FunctionNotFoundException(call.getName());
@@ -186,7 +203,7 @@ public class Interpreter implements OutputObserver {
         call.definition(env.procedure(call.getName()));
 
         if (!call.definition().isMacro()) {
-            env.push(new Scope(call.definition().getName()));
+            recursedScope = env.push(new Scope(call.definition().getName()));
         }
 
         // Evaluate arguments first
@@ -196,39 +213,50 @@ public class Interpreter implements OutputObserver {
         for (Node c : call.getChildren()) {
 
             // Recursive case: Arguments are evaluated before evaluating the function itself
-            apply(c);
-//            Node result = continuation.lastResult();
-            if (i < call.definition().getArity()) {
+//            apply(c);
+            try {
+                apply(c);
+            } catch (RecursionException re) {
+                resume();
+            }
+
+//            Node result = stack.output();
+            if (call.args().size() < call.definition().getArity()) {
                 env.local(call.definition().getArgs().get(i));
                 env.make(
                         call.definition().getArgs().get(i),
-                        stack.lastResult()
+                        stack.output()
                 );
                 i++;
             }
-            args.add(stack.lastResult());
+            call.arg(stack.output());
+//            args.add(stack.output());
         }
-        call.args(args);
+//        call.args(args);
 
         // Evaluate Call with concrete arguments
-//        continuation.currentCall(call);
+//        stack.currentCall(call);
         // TODO differentiate from macros
         if (call.definition().isNative() || call.definition().isMacro()) {
             tracers.forEach(t -> t.callPrimitive(call.definition().getName(), call.args(), env));
 
             // Second base case: a primitive Procedure should never recursively call another Procedure
-            stack.lastResult(call.definition().getNativeCall().apply(env.peek(), call.args()));
+            stack.output(call.definition().getNativeCall().apply(env.peek(), call.args()));
         } else {
 
             tracers.forEach(t -> t.call(call.definition().getName(), call.args(), env));
-            stack.push(call.definition());
+            recursedCall = stack.schedule(call.definition());
 
-//            if (callDepth >= 1000) {
-//                callDepth = 0;
-//                throw new DepthException();
-//            }
-            while (continuation().hasNext()) {
-                Node line = continuation().next();
+            if (recursedScope && recursedCall) {
+                throw new RecursionException(call.getName(), call);
+            } else if (recursedCall) {
+                System.out.println("RECURSED CALL ONLY");
+            } else if (recursedScope) {
+                System.out.println("RECURSED SCOPE ONLY");
+            }
+
+            while (stack.hasNext()) {
+                Node line = stack().next();
 
                 // every direct child should be a function call
                 if (!line.type().equals(NodeType.PROCCALL)) {
@@ -243,14 +271,20 @@ public class Interpreter implements OutputObserver {
 
                 // Recursive case: The children of a Procedure itself are Procedures too.
                 if (!paused) {
-                    apply(line);
+//                    apply(line);
+
+                    try {
+                        apply(line);
+                    } catch (RecursionException re) {
+                        resume();
+                    }
                 } else {
                     return false;
                 }
             }
         }
 
-        stack.doneCurrentCall();
+        stack.completeCurrentCall();
 
         if (!call.definition().isMacro()) {
             env.pop();

@@ -16,6 +16,7 @@
 package ch.uprisesoft.yali.ast.node;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  *
  * @author uprisesoft@gmail.com
  */
-public class Call extends Node {
+public class Call extends Node implements Iterator {
 
     private final String name;
     private final java.util.List<Node> args;
@@ -43,7 +44,9 @@ public class Call extends Node {
         this.definition = definition;
     }
     
-    
+    public void arg(Node arg) {
+        this.args.add(arg);
+    }
 
     public List<Node> args() {
         return args;
@@ -103,6 +106,16 @@ public class Call extends Node {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean hasNext() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Object next() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

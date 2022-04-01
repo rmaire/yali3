@@ -66,11 +66,6 @@ public class Parser {
         for (Token t: list.token().subList(1, list.token().size()-1)) {
             newSource.append(t.getLexeme()).append(" ");
         }
-
-//        java.util.List<Token> token = list.token().subList(1, list.token().size()-1);
-//        token.add(new Token(TokenType.EOF, "", current, current, current));
-        
-//        tokens.addAll(token);
         
         return read(newSource.toString().trim());
     }
@@ -377,9 +372,7 @@ public class Parser {
                 continue;
             }
             list.addChild(new SymbolWord(current().getLexeme()));
-//            word.token(current());
             list.token(current());
-//            list.addChild(word);
             advance();
         }
         

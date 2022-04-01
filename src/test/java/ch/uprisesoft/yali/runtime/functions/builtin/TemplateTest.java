@@ -20,6 +20,7 @@ import ch.uprisesoft.yali.ast.node.NodeType;
 import ch.uprisesoft.yali.lexer.Lexer;
 import ch.uprisesoft.yali.helper.ObjectMother;
 import ch.uprisesoft.yali.parser.Parser;
+import ch.uprisesoft.yali.parser.Parser;
 import ch.uprisesoft.yali.runtime.interpreter.Interpreter;
 import ch.uprisesoft.yali.runtime.io.InputGenerator;
 import ch.uprisesoft.yali.runtime.io.OutputObserver;

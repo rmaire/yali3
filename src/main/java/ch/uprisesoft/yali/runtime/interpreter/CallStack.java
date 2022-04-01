@@ -18,49 +18,59 @@ import java.util.List;
  */
 public class CallStack {
 
-    private Node lastResult = Node.none();
+    private Node output = Node.none();
 
-    private List<Iterator<Node>> iterators = new ArrayList<>();
+    private List<NodeIterator> trace = new ArrayList<>();
 
     private Call currentCall;
-//    private boolean paused = false;
 
-    public Node lastResult() {
-        return lastResult;
+    public Node output() {
+        return output;
     }
 
-    public void lastResult(Node lastResult) {
-        this.lastResult = lastResult;
+    public void output(Node lastResult) {
+        this.output = lastResult;
     }
 
-//    public void push(Iterator<Node> iterator) {
-//        iterators.add(iterator);
-//    }
-    public void push(Node node) {
-        iterators.add(node.getChildren().iterator());
-    }
-
-    public Iterator<Node> pop() {
-        Iterator<Node> ret = iterators.get(iterators.size() - 1);
-        iterators.remove(iterators.size() - 1);
-        return ret;
+    public boolean schedule(Node node) {
+        if(node.type() == NodeType.PROCEDURE) {
+//            System.out.println("SCHEDULING PROCCALL");
+            String name = node.toProcedureDef().getName();
+            for(int i = trace.size() -2; i >= 0; i--) {
+                NodeIterator currentNode = trace.get(i);
+                if(currentNode.node().type() == NodeType.PROCEDURE && node.toProcedureDef().getName().equals(name)) {
+                    for(int j = trace.size()-1; j>=i; j--) {
+                        trace.remove(j);
+                        currentNode.reset();
+                        trace.add(currentNode);
+                    }
+//                    System.out.println("RECURSION: " + (trace.size()- i) + " -> " + trace.get(i).node().toString());
+                    return true;
+                } else {
+//                     System.out.println("NOT RECURSION: " + currentNode.type());
+                }
+            }
+        }
+        
+        trace.add(new NodeIterator(node));
+        return false;
     }
 
     public boolean hasNext() {
-        if (iterators.isEmpty()) {
+        if (trace.isEmpty()) {
             return false;
         }
 
-        if (iterators.get(iterators.size() - 1).hasNext()) {
+        if (trace.get(trace.size() - 1).hasNext()) {
             return true;
         } else {
-            iterators.remove(iterators.size() - 1);
+            trace.remove(trace.size() - 1);
             return false;
         }
     }
 
     public Node next() {
-        Node ret = iterators.get(iterators.size() - 1).next();
+        Node ret = trace.get(trace.size() - 1).next();
         if (ret.type().equals(NodeType.PROCCALL)) {
             currentCall = ret.toProcedureCall();
         }
@@ -71,23 +81,7 @@ public class CallStack {
         return currentCall;
     }
     
-    public void doneCurrentCall() {
+    public void completeCurrentCall() {
         this.currentCall = null;
     }
-
-    private void currentCall(Call currentCall) {
-        this.currentCall = currentCall;
-    }
-
-//    public boolean paused() {
-//        return paused;
-//    }
-//
-//    public void pause() {
-//        this.paused = true;
-//    }
-//
-//    public void resume() {
-//        this.paused = false;
-//    }
 }
