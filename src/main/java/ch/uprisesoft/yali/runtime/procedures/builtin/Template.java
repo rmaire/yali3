@@ -75,7 +75,8 @@ public class Template implements ProcedureProvider {
             }
 
             command += ")";
-            it.stack().schedule(it.read(command));
+//            it.stack().schedule(it.read(command));
+            it.run(it.read(command));
             return Node.none();
 
         } else if (args.get(1).type().equals(NodeType.QUOTE)) {
@@ -104,7 +105,8 @@ public class Template implements ProcedureProvider {
                 command += "(" + runCommand + ") ";
             }
             command += ")";
-            it.stack().schedule(it.read(command));
+//            it.stack().schedule(it.read(command));
+            it.run(it.read(command));
             return Node.none();
 
         } else {
@@ -140,7 +142,7 @@ public class Template implements ProcedureProvider {
 
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.runBounded(it.read(runCommand));
+                Node result = it.run(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);
@@ -170,7 +172,7 @@ public class Template implements ProcedureProvider {
 
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.runBounded(it.read(runCommand));
+                Node result = it.run(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);
@@ -211,7 +213,7 @@ public class Template implements ProcedureProvider {
                 }
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.runBounded(it.read(runCommand));
+                Node result = it.run(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);
@@ -237,7 +239,7 @@ public class Template implements ProcedureProvider {
                 }
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.runBounded(it.read(runCommand));
+                Node result = it.run(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);

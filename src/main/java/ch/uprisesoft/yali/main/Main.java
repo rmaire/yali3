@@ -15,10 +15,9 @@
  */
 package ch.uprisesoft.yali.main;
 
+import ch.uprisesoft.yali.ast.node.List;
 import ch.uprisesoft.yali.ast.node.Node;
-import ch.uprisesoft.yali.ast.node.NodeType;
-import ch.uprisesoft.yali.lexer.Token;
-import ch.uprisesoft.yali.repl.Repl2;
+import ch.uprisesoft.yali.repl.PrintingTracer;
 import ch.uprisesoft.yali.runtime.interpreter.Interpreter;
 import ch.uprisesoft.yali.runtime.io.InputGenerator;
 import ch.uprisesoft.yali.runtime.io.OutputObserver;
@@ -56,17 +55,21 @@ public class Main {
 
         Interpreter it = new Interpreter();
         it.loadStdLib(oo, ig);
-//        it.addTracer(new PrintingTracer());
+        it.addTracer(new PrintingTracer());
 
-        String input = "to recurse :i\n"
-                + "print :i\n"
-//                + "if (:i > 0) [recurse :i + 1]\n"
-                + "recurse :i + 1\n"
-                + "end\n"
-                + "\n"
-                + "recurse 1\n";
+//        String input = "to recurse :i\n"
+//                + "print :i\n"
+////                + "if (:i > 0) [recurse :i + 1]\n"
+//                + "recurse :i + 1\n"
+//                + "end\n"
+//                + "\n"
+//                + "recurse 1\n";
+//
+//        Node res = it.run(it.read(input));
 
-        Node res = it.run(it.read(input));
+        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
+        List ast = it.read(input).toList();
+        it.run(ast);
         
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("to pausetest").append("\n");

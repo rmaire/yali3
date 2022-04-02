@@ -68,7 +68,7 @@ public class PrintingTracer implements Tracer {
 
     @Override
     public void apply(Node val) {
-        System.out.println("apply: " + val.toString());
+//        System.out.println("apply: " + val.toString());
     }
 
     @Override
@@ -83,6 +83,21 @@ public class PrintingTracer implements Tracer {
         } else {
             System.out.println("Resumed");
         }
+    }
+
+    @Override
+    public void scope(String name, Environment env) {
+        System.out.println("Open environment " + name);
+    }
+
+    @Override
+    public void unscope(String name, Environment env) {
+        System.out.println("Close environment " + name);
+    }
+
+    @Override
+    public void arg(String name, Node val, Environment env) {
+        System.out.println("Evaluating argument for Call " + name + " -> " + val);
     }
 
 }

@@ -30,6 +30,7 @@ public class Call extends Node implements Iterator {
     private final java.util.List<Node> args;
     private Procedure definition;
     private Node result;
+    private int callPos = 0;
     
     public Call(String name) {
         super(NodeType.PROCCALL);
@@ -59,12 +60,38 @@ public class Call extends Node implements Iterator {
         this.args.addAll(args);
     }
     
-    public boolean prepped() {
-        return args.size() < definition.getArity();
+    public Node nextParameter() {
+        int next = args.size();
+        return children.get(next);
     }
     
-    public boolean finished() {
-        return result != null;
+    public boolean hasMoreCalls() {
+        return callPos >= children.size()-1;
+    }
+    
+    public Call nextCall(){
+        return children.get(callPos++).toProcedureCall();
+    }
+    
+    public void reset() {
+        callPos = 0;
+        args.clear();
+        result = Node.none();
+    }
+    
+    /**
+     * Checks if all arguments are evaluated
+     * @return true if all arguments are evaluated, false otherwise
+     */
+    public boolean ready() {
+        if(definition == null) {
+            System.out.println("DEFINITION: " + name);
+        }
+        return args.size() == definition.getArity();
+    }
+    
+    public boolean evaluated() {
+        return !result.type().equals(NodeType.NONE);
     }
 
     public Node result() {

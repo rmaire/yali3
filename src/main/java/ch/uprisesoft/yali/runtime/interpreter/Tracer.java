@@ -18,9 +18,12 @@ public interface Tracer {
     public void start(Node node);
     public void callPrimitive(String name, List<Node> args, Environment env);
     public void call(String name, List<Node> args, Environment env);
+    public void arg(String name, Node val, Environment env);
     public void make(String name, Node val, Environment env);
     public void thing(String name, Node val, Environment env);
     public void local(String name, Environment env);
+    public void scope(String name, Environment env);
+    public void unscope(String name, Environment env);
     public void run(Node val);
     public void tick(Node val);
     public void apply(Node val);

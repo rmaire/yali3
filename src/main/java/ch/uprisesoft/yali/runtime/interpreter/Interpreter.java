@@ -45,7 +45,6 @@ public class Interpreter implements OutputObserver {
     private List<Tracer> tracers = new ArrayList<>();
 
     private Environment env = new Environment();
-//    private CallStack stack = new CallStack();
     private boolean paused = false;
 
     private java.util.Stack<Call> stack = new java.util.Stack<>();
@@ -61,56 +60,46 @@ public class Interpreter implements OutputObserver {
     public List<Tracer> tracers() {
         return tracers;
     }
-
-//    public CallStack stack() {
-//        return stack;
-//    }
+    
     /**
      * Interpreting functionality, public interface
      */
     public Node run(Node node) {
         tracers.forEach(t -> t.run(node));
 
-        if(!node.type().equals(NodeType.PROCCALL)) {
+        if (!node.getChildren().get(0).type().equals(NodeType.PROCCALL)) {
             return node;
         }
-        
-        Call call = node.toProcedureCall();
-        
-        if(!env.defined(call.getName())) {
+
+        Call call = node.getChildren().get(0).toProcedureCall();
+
+        if (!env.defined(call.getName())) {
             throw new FunctionNotFoundException(call.getName());
         }
-        
+
         call.definition(env.procedure(call.getName()));
         
         stack.push(call);
 
-//        stack.schedule(node);
-        while (!stack.empty()) {
-            if (paused) {
-                break;
-            }
-
-            tick();
+        while (tick()) {
         }
 
         return stack.pop().result();
     }
 
-//    public Node runBounded(Node node) {
+    public Node runBounded(Node node) {
 //        tracers.forEach(t -> t.run(node));
-//
-//        CallStack save = stack;
-//        stack = new CallStack();
-//
-//        Node result = run(node);
-//
-//        stack = save;
-//        return result;
-//    }
+
+        java.util.Stack<Call> save = stack;
+        stack = new java.util.Stack<>();
+
+        Node result = run(node);
+
+        stack = save;
+        return result;
+    }
+
     public Node resume() {
-//        tracers.forEach(t -> t.resume(stack.currentCall()));
-//        callDepth = 0;
         paused = false;
 
         while (!stack.empty()) {
@@ -141,174 +130,90 @@ public class Interpreter implements OutputObserver {
 
     public Node read(ch.uprisesoft.yali.ast.node.List list) {
 //        tracers.forEach(t -> t.parse(source));
-
-        Node node = new Parser(this).read(list);
-        return node;
-    }
-
-//    public Node read(ch.uprisesoft.yali.ast.node.List list) {
-////        tracers.forEach(t -> t.parse(source));
-//        return new Parser(this).read(list);
-//    }
-    public Node result() {
-        return stack.pop();
+        return new Parser(this).read(list);
     }
 
     public Environment env() {
         return env;
     }
 
-    /**
-     * This method evaluates an actual Procedure Call, with all arguments.
-     * Checks if the procedure is native. If yes, it calls the lambda defined in
-     * the Procedure definition. If no, it calls apply again, as it needs
-     * further evaluation (every Procedure needs to be reduced to native calls
-     * in the end).
-     */
     public boolean tick() {
 
         if (paused) {
             return false;
         }
 
+        // Nothing happened, no program loaded.
         if (stack.empty()) {
             return false;
         }
+        
+        tracers.forEach(t -> t.apply(stack.peek()));
 
-        Node actual = stack.pop();
-
-        if (!actual.type().equals(NodeType.PROCCALL)) {
-            throw new NodeTypeException(actual, actual.type(), NodeType.PROCCALL);
+        // If only one evaluated procedure is on the stack, the program is finished
+        // and stack.peek.result() gives the final result
+        if (stack.size() == 1 && stack.peek().evaluated()) {
+            return false;
         }
-        
-        Call call = actual.toProcedureCall();
-        
-        if(call.prepped()) {
+
+        // If more than one call is on the stack, and the current call is evaluated,
+        // this must be an arg to the previous call. Pop the current call, get it's
+        // result and add it to the args of the precious call
+        if (stack.size() > 1 && stack.peek().evaluated()) {
+            if (!stack.peek().definition().isMacro()) {
+                tracers.forEach(t -> t.unscope(env.peek().getScopeName(), env));
+                env.pop();
+            }
             
+            Node lastResult = stack.pop().result();
+            stack.peek().arg(lastResult);
+            return true;
+        }
+
+        Call call = stack.peek();
+
+        if (!call.ready()) {
+            Node param = call.nextParameter();
+            
+            tracers.forEach(t -> t.arg(call.getName(), param, env));
+            
+            if (!param.type().equals(NodeType.PROCCALL)) {
+                call.arg(param);
+            } else {
+                schedule(param.toProcedureCall());
+            }
+            return true;
         }
         
-        if(call.definition().isNative()) {
+        if (call.ready() && (call.definition().isNative() || call.definition().isMacro())) {
+            tracers.forEach(t -> t.callPrimitive(call.getName(), call.args(), env));
             Node result = call.definition().getNativeCall().apply(env.peek(), call.args());
             call.result(result);
-        } 
-        
+        }
+
+        if (call.ready() && !call.definition().isNative() && call.hasMoreCalls()) {
+            tracers.forEach(t -> t.call(call.getName(), call.args(), env));
+            schedule(call.nextCall());
+        }
+
+        // Check if there's more to do
+        if (stack.size() == 1 && !stack.peek().evaluated()) {
+            return true;
+        }
+        if (stack.size() > 1) {
+            return true;
+        }
+
         return false;
     }
-
-    public boolean apply(Node node) {
-        boolean recursedCall = false;
-        boolean recursedScope = false;
-
-        tracers.forEach(t -> t.apply(node));
-
-        if (paused) {
-            return false;
-        }
-
-        // First base case: If a Node is not a Procedure call, evaluation is finished
-        if (!node.type().equals(NodeType.PROCCALL)) {
-            stack.output(node);
-            return false;
-        }
-
-        Call call = node.toProcedureCall();
-//        stack.currentCall(call);
-
-        if (!env.defined(call.getName())) {
-            throw new FunctionNotFoundException(call.getName());
-        }
-
+    
+    private void schedule(Call call) {
         call.definition(env.procedure(call.getName()));
-
-        if (!call.definition().isMacro()) {
-            recursedScope = env.push(new Scope(call.definition().getName()));
+        stack.push(call);
+        if(!call.definition().isMacro()){
+            env.push(new Scope(call.getName()));
+            tracers.forEach(t -> t.scope(env.peek().getScopeName(), env));
         }
-
-        // Evaluate arguments first
-        java.util.List<Node> args = new ArrayList<>();
-
-        int i = 0;
-        for (Node c : call.getChildren()) {
-
-            // Recursive case: Arguments are evaluated before evaluating the function itself
-//            apply(c);
-            try {
-                apply(c);
-            } catch (RecursionException re) {
-                resume();
-            }
-
-//            Node result = stack.output();
-            if (call.args().size() < call.definition().getArity()) {
-                env.local(call.definition().getArgs().get(i));
-                env.make(
-                        call.definition().getArgs().get(i),
-                        stack.output()
-                );
-                i++;
-            }
-            call.arg(stack.output());
-//            args.add(stack.output());
-        }
-//        call.args(args);
-
-        // Evaluate Call with concrete arguments
-//        stack.currentCall(call);
-        // TODO differentiate from macros
-        if (call.definition().isNative() || call.definition().isMacro()) {
-            tracers.forEach(t -> t.callPrimitive(call.definition().getName(), call.args(), env));
-
-            // Second base case: a primitive Procedure should never recursively call another Procedure
-            stack.output(call.definition().getNativeCall().apply(env.peek(), call.args()));
-        } else {
-
-            tracers.forEach(t -> t.call(call.definition().getName(), call.args(), env));
-            recursedCall = stack.schedule(call.definition());
-
-            if (recursedScope && recursedCall) {
-                throw new RecursionException(call.getName(), call);
-            } else if (recursedCall) {
-                System.out.println("RECURSED CALL ONLY");
-            } else if (recursedScope) {
-                System.out.println("RECURSED SCOPE ONLY");
-            }
-
-            while (stack.hasNext()) {
-                Node line = stack.next();
-
-                // every direct child should be a function call
-                if (!line.type().equals(NodeType.PROCCALL)) {
-                    throw new NodeTypeException(line, line.type(), NodeType.PROCCALL);
-                }
-
-                // Check if function call is output or stop. If yes, no further
-                // lines will be evaluated
-                if (line.toProcedureCall().getName().equals("output") || line.toProcedureCall().getName().equals("stop")) {
-                    break;
-                }
-
-                // Recursive case: The children of a Procedure itself are Procedures too.
-                if (!paused) {
-//                    apply(line);
-
-                    try {
-                        apply(line);
-                    } catch (RecursionException re) {
-                        resume();
-                    }
-                } else {
-                    return false;
-                }
-            }
-        }
-
-        stack.completeCurrentCall();
-
-        if (!call.definition().isMacro()) {
-            env.pop();
-        }
-
-        return true;
     }
 
     public Interpreter loadStdLib(OutputObserver oo) {
@@ -367,66 +272,5 @@ public class Interpreter implements OutputObserver {
      */
     @Override
     public void inform(String output) {
-    }
-}
-
-//public static void main(String[] args) {
-//    LOGGER.info("Start calculating war casualties");
-//    var result = loop(10, 1).result();
-//    LOGGER.info("The number of orcs perished in the war: {}", result);
-//}
-//
-//public static Trampoline<Integer> loop(int times, int prod) {
-//    if (times == 0) {
-//        return Trampoline.done(prod);
-//    } else {
-//        return Trampoline.more(() -> loop(times - 1, prod * times));
-//    }
-//}
-interface Trampoline<T> {
-
-    T get();
-
-    default Trampoline<T> jump() {
-        return this;
-    }
-
-    default T result() {
-        return get();
-    }
-
-    default boolean complete() {
-        return true;
-    }
-
-    static <T> Trampoline<T> done(final T result) {
-        return () -> result;
-    }
-
-    static <T> Trampoline<T> more(final Trampoline<Trampoline<T>> trampoline) {
-        return new Trampoline<T>() {
-            @Override
-            public boolean complete() {
-                return false;
-            }
-
-            @Override
-            public Trampoline<T> jump() {
-                return trampoline.result();
-            }
-
-            @Override
-            public T get() {
-                return trampoline(this);
-            }
-
-            T trampoline(final Trampoline<T> trampoline) {
-                return Stream.iterate(trampoline, Trampoline::jump)
-                        .filter(Trampoline::complete)
-                        .findFirst()
-                        .map(Trampoline::result)
-                        .orElseThrow(null);
-            }
-        };
     }
 }
