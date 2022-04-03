@@ -81,6 +81,11 @@ public class Interpreter implements OutputObserver {
 
             call.definition(env.procedure(call.getName()));
 
+            if (!call.definition().isMacro()) {
+                env.push(new Scope(call.getName()));
+                tracers.forEach(t -> t.scope(env.peek().getScopeName(), env));
+            }
+
             stack.push(call);
 
             while (tick()) {
@@ -103,6 +108,11 @@ public class Interpreter implements OutputObserver {
 
         call.definition(env.procedure(call.getName()));
 
+        if (!call.definition().isMacro()) {
+            env.push(new Scope(call.getName()));
+            tracers.forEach(t -> t.scope(env.peek().getScopeName(), env));
+        }
+        
         stack.push(call);
 
         while (tick()) {

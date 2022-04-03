@@ -79,7 +79,7 @@ public class Main {
 
         StringBuilder sb = new StringBuilder();
         sb.append("make \"size 81 / 9").append("\n");
-        sb.append("print 2*3").append("\n");
+        sb.append("print :size * 3").append("\n");
         sb.append("print :size - 4").append("\n");
         Node res = it.run(it.read(sb.toString()));
 
