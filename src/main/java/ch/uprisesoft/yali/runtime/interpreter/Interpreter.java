@@ -80,14 +80,7 @@ public class Interpreter implements OutputObserver {
                 throw new FunctionNotFoundException(call.getName());
             }
 
-            call.definition(env.procedure(call.getName()));
-
-            if (!call.definition().isMacro()) {
-                env.push(new Scope(call.getName()));
-                tracers.forEach(t -> t.scope(env.peek().getScopeName(), env));
-            }
-
-            stack.push(call);
+            schedule(call);
 
             while (tick()) {
             }
@@ -107,14 +100,7 @@ public class Interpreter implements OutputObserver {
             throw new FunctionNotFoundException(call.getName());
         }
 
-        call.definition(env.procedure(call.getName()));
-
-        if (!call.definition().isMacro()) {
-            env.push(new Scope(call.getName()));
-            tracers.forEach(t -> t.scope(env.peek().getScopeName(), env));
-        }
-        
-        stack.push(call);
+        schedule(call);
 
         while (tick()) {
         }
@@ -137,12 +123,7 @@ public class Interpreter implements OutputObserver {
     public Node resume() {
         paused = false;
 
-        while (!stack.empty()) {
-            if (paused) {
-                break;
-            }
-
-            tick();
+        while (tick()) {
         }
 
         return stack.pop().result();
