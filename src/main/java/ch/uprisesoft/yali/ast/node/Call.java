@@ -36,7 +36,7 @@ public class Call extends Node implements Iterator {
         super(NodeType.PROCCALL);
         this.name = name;
         this.args = new ArrayList<>();
-        this.result = Node.none();
+//        this.result = null;
     }
 
     public Procedure definition() {
@@ -70,13 +70,13 @@ public class Call extends Node implements Iterator {
     }
     
     public Call nextCall(){
-        return children.get(callPos++).toProcedureCall();
+        return definition.getChildren().get(callPos++).toProcedureCall();
     }
     
     public void reset() {
         callPos = 0;
         args.clear();
-        result = Node.none();
+        result = null;
     }
     
     /**
@@ -91,7 +91,7 @@ public class Call extends Node implements Iterator {
     }
     
     public boolean evaluated() {
-        return !result.type().equals(NodeType.NONE);
+        return result != null;
     }
 
     public Node result() {

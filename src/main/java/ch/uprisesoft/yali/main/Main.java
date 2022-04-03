@@ -66,11 +66,26 @@ public class Main {
 //                + "recurse 1\n";
 //
 //        Node res = it.run(it.read(input));
+//
+//String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
+//        String input = "to testit\n"
+//                + "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n"
+//                + "end\n";
+//        List ast = it.read(input).toList();
+//        it.run(it.read("testit\n"));
+//
+        //        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
+//        it.run(it.read(input));
 
-        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
-        List ast = it.read(input).toList();
-        it.run(ast);
-        
+        StringBuilder sb = new StringBuilder();
+        sb.append("make \"size 81 / 9").append("\n");
+        sb.append("print 2*3").append("\n");
+        sb.append("print :size - 4").append("\n");
+        Node res = it.run(it.read(sb.toString()));
+
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("make \"first_programmer \"Ada_Lovelace").append("\n");
+//        sb.append("print :first_programmer").append("\n");
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("to pausetest").append("\n");
 //        sb.append("if (1 > 0) [pause print \"two]").append("\n");

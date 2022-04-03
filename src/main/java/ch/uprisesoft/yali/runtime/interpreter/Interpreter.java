@@ -60,25 +60,49 @@ public class Interpreter implements OutputObserver {
     public List<Tracer> tracers() {
         return tracers;
     }
-    
+
     /**
      * Interpreting functionality, public interface
      */
     public Node run(Node node) {
         tracers.forEach(t -> t.run(node));
 
-        if (!node.getChildren().get(0).type().equals(NodeType.PROCCALL)) {
-            return node;
+        if (!node.type().equals(NodeType.LIST)) {
+            throw new NodeTypeException(node, node.type(), NodeType.LIST);
         }
 
-        Call call = node.getChildren().get(0).toProcedureCall();
+        for (Node n : node.getChildren()) {
+
+            Call call = n.toProcedureCall();
+
+            if (!env.defined(call.getName())) {
+                throw new FunctionNotFoundException(call.getName());
+            }
+
+            call.definition(env.procedure(call.getName()));
+
+            stack.push(call);
+
+            while (tick()) {
+            }
+
+        }
+
+        if (stack.size() > 0) {
+            return stack.pop().result();
+        }
+        return Node.none();
+    }
+
+    public Node run(Call call) {
+        tracers.forEach(t -> t.run(call));
 
         if (!env.defined(call.getName())) {
             throw new FunctionNotFoundException(call.getName());
         }
 
         call.definition(env.procedure(call.getName()));
-        
+
         stack.push(call);
 
         while (tick()) {
@@ -147,7 +171,7 @@ public class Interpreter implements OutputObserver {
         if (stack.empty()) {
             return false;
         }
-        
+
         tracers.forEach(t -> t.apply(stack.peek()));
 
         // If only one evaluated procedure is on the stack, the program is finished
@@ -157,16 +181,27 @@ public class Interpreter implements OutputObserver {
         }
 
         // If more than one call is on the stack, and the current call is evaluated,
-        // this must be an arg to the previous call. Pop the current call, get it's
-        // result and add it to the args of the precious call
+        // this must be an arg or a result to the previous call. Pop the current call, get it's
+        // result and add it to the args or the result  of the precious call
         if (stack.size() > 1 && stack.peek().evaluated()) {
             if (!stack.peek().definition().isMacro()) {
                 tracers.forEach(t -> t.unscope(env.peek().getScopeName(), env));
                 env.pop();
             }
-            
+
             Node lastResult = stack.pop().result();
-            stack.peek().arg(lastResult);
+
+            // If previous call is ready but has no result, set the last
+            // result. If not, add it to the args
+//            System.out.println("HERE: " + stack.peek().getName() + " -> " + stack.peek().ready() + " -> " + stack.peek().evaluated());
+            if (stack.peek().ready() && !stack.peek().evaluated()) {
+//                System.out.println("Set result to " + stack.peek().getName());
+                stack.peek().result(lastResult);
+                return stack.size() > 1;
+            } else {
+//                System.out.println("Add arg to " + stack.peek().getName());
+                stack.peek().arg(lastResult);
+            }
             return true;
         }
 
@@ -174,9 +209,9 @@ public class Interpreter implements OutputObserver {
 
         if (!call.ready()) {
             Node param = call.nextParameter();
-            
+
             tracers.forEach(t -> t.arg(call.getName(), param, env));
-            
+
             if (!param.type().equals(NodeType.PROCCALL)) {
                 call.arg(param);
             } else {
@@ -184,14 +219,12 @@ public class Interpreter implements OutputObserver {
             }
             return true;
         }
-        
+
         if (call.ready() && (call.definition().isNative() || call.definition().isMacro())) {
             tracers.forEach(t -> t.callPrimitive(call.getName(), call.args(), env));
             Node result = call.definition().getNativeCall().apply(env.peek(), call.args());
             call.result(result);
-        }
-
-        if (call.ready() && !call.definition().isNative() && call.hasMoreCalls()) {
+        } else if (call.ready() && !call.definition().isNative() && call.hasMoreCalls()) {
             tracers.forEach(t -> t.call(call.getName(), call.args(), env));
             schedule(call.nextCall());
         }
@@ -206,11 +239,11 @@ public class Interpreter implements OutputObserver {
 
         return false;
     }
-    
+
     private void schedule(Call call) {
         call.definition(env.procedure(call.getName()));
         stack.push(call);
-        if(!call.definition().isMacro()){
+        if (!call.definition().isMacro()) {
             env.push(new Scope(call.getName()));
             tracers.forEach(t -> t.scope(env.peek().getScopeName(), env));
         }
