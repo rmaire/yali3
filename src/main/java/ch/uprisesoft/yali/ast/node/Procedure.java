@@ -69,7 +69,7 @@ public class Procedure extends Node {
     }
 
     public Boolean isNative() {
-        return funType == FunctionType.NATIVE;
+        return nativeCall != null;
     }
     
     public Boolean isMacro() {
