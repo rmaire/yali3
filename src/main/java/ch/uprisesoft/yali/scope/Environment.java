@@ -7,6 +7,7 @@ package ch.uprisesoft.yali.scope;
 
 import ch.uprisesoft.yali.ast.node.Node;
 import ch.uprisesoft.yali.ast.node.Procedure;
+import ch.uprisesoft.yali.runtime.interpreter.Tracer;
 import ch.uprisesoft.yali.runtime.procedures.FunctionNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,12 +19,14 @@ import java.util.Map;
  * @author rmaire
  */
 public class Environment {
+    
+    private List<Tracer> tracers = new ArrayList<>();
 
     private List<Scope> scopes = new ArrayList<>();
     
-    /**
-     * Scopes
-     */
+    public void addTracer(Tracer tracer) {
+        tracers.add(tracer);
+    }
     
     public Scope peek() {
         return scopes.get(scopes.size() - 1);
@@ -62,28 +65,33 @@ public class Environment {
 
     public void make(String name, Node value) {
 
+        tracers.forEach(t -> t.make(name, value, this));
         for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).defined(name.toLowerCase())) {
                 scopes.get(i).define(name.toLowerCase(), value);
                 return;
             }
         }
-
+        
         scopes.get(0).define(name.toLowerCase(), value);
     }
 
     public void local(String name) {
+        tracers.forEach(t -> t.local(name, this));
         peek().local(name.toLowerCase());
     }
 
     public Node thing(String name) {
-
+        
         for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).defined(name.toLowerCase())) {
-                return scopes.get(i).resolve(name.toLowerCase());
+                final Node ret = scopes.get(i).resolve(name.toLowerCase());
+                tracers.forEach(t -> t.thing(name, ret, this));
+                return ret;
             }
         }
 
+        tracers.forEach(t -> t.thing(name, Node.none(), this));
         return Node.none();
     }
 

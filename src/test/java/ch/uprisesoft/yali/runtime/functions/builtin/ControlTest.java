@@ -79,7 +79,7 @@ public class ControlTest {
         assertThat(it.env().thing("testit").type(), is(NodeType.QUOTE));
         assertThat(it.env().thing("testit").toQuotedWord().getQuote(), is("someval"));
     }
-    
+
     @Test
     public void testReferenceAsVariableName() {
         String input = "make \"varone \"testvar\n"
@@ -175,7 +175,7 @@ public class ControlTest {
         assertThat(res.toList().getChildren().get(0).toIntegerWord().getInteger(), is(100));
         assertThat(res.toList().getChildren().get(1).toIntegerWord().getInteger(), is(100));
     }
-    
+
     @Test
     public void testRepeatScope() {
         StringBuilder sb = new StringBuilder();
@@ -187,8 +187,8 @@ public class ControlTest {
         assertThat(it.env().thing("testvar").type(), is(NodeType.QUOTE));
         assertThat(it.env().thing("testvar").toQuotedWord().getQuote(), is("yes"));
     }
-    
-        @Test
+
+    @Test
     public void testIfScope() {
         StringBuilder sb = new StringBuilder();
         sb.append("if true [make \"testvar \"yes]").append("\n");
@@ -221,7 +221,7 @@ public class ControlTest {
         assertThat(turtlepos.getChildren().get(1).toIntegerWord().getInteger(), is(100));
 
     }
-    
+
     @Test
     public void testRunScope() {
         StringBuilder sb = new StringBuilder();
@@ -255,7 +255,7 @@ public class ControlTest {
         assertThat(res.type(), is(NodeType.NIL));
         assertThat(outputs.size(), is(0));
     }
-    
+
     @Test
     public void testIfFalseLiteral() {
         StringBuilder sb = new StringBuilder();
@@ -265,7 +265,7 @@ public class ControlTest {
         assertThat(res.type(), is(NodeType.NIL));
         assertThat(outputs.size(), is(0));
     }
-    
+
     @Test
     public void testIfTrueLiteral() {
         StringBuilder sb = new StringBuilder();
@@ -275,7 +275,7 @@ public class ControlTest {
         assertThat(outputs.size(), is(1));
         assertThat(outputs.get(0), is("Yes\n"));
     }
-    
+
     @Test
     public void testIfTrueVarLiteral() {
         StringBuilder sb = new StringBuilder();
@@ -286,7 +286,7 @@ public class ControlTest {
         assertThat(outputs.size(), is(1));
         assertThat(outputs.get(0), is("Yes\n"));
     }
-    
+
     @Test
     public void testIfFalseVarLiteral() {
         StringBuilder sb = new StringBuilder();
@@ -297,7 +297,7 @@ public class ControlTest {
         assertThat(res.type(), is(NodeType.NIL));
         assertThat(outputs.size(), is(0));
     }
-    
+
     @Test
     public void testIfTrueVarEval() {
         StringBuilder sb = new StringBuilder();
@@ -308,7 +308,7 @@ public class ControlTest {
         assertThat(outputs.size(), is(1));
         assertThat(outputs.get(0), is("Yes\n"));
     }
-    
+
     @Test
     public void testIfFalseVarEval() {
         StringBuilder sb = new StringBuilder();
@@ -404,7 +404,7 @@ public class ControlTest {
         assertThat(res.type(), is(NodeType.QUOTE));
         assertThat(res.toQuotedWord().getQuote(), is("No"));
     }
-    
+
     @Test
     public void testLocalMake() {
 
@@ -431,7 +431,7 @@ public class ControlTest {
         assertThat(outputs.get(0), is("Hello!\n"));
         assertThat(outputs.get(1), is("Bye!\n"));
     }
-    
+
     @Test
     public void testThing() {
 
@@ -449,7 +449,7 @@ public class ControlTest {
         assertThat(outputs.size(), is(1));
         assertThat(outputs.get(0), is("Hello!\n"));
     }
-    
+
     @Test
     public void testPause1() {
 
@@ -464,7 +464,6 @@ public class ControlTest {
         sb.append("pause").append("\n");
         sb.append("pausetest").append("\n");
 
-        
         it.run(it.read(sb.toString()));
         it.resume();
         it.resume();
@@ -474,7 +473,7 @@ public class ControlTest {
         assertThat(outputs.get(1), is("two\n"));
         assertThat(outputs.get(2), is("three\n"));
     }
-    
+
     @Test
     public void testPause2() {
 
@@ -496,7 +495,7 @@ public class ControlTest {
         assertThat(outputs.get(0), is("one\n"));
         assertThat(outputs.get(1), is("two\n"));
     }
-    
+
     @Test
     public void testPause3() {
 

@@ -21,6 +21,7 @@ import ch.uprisesoft.yali.repl.PrintingTracer;
 import ch.uprisesoft.yali.runtime.interpreter.Interpreter;
 import ch.uprisesoft.yali.runtime.io.InputGenerator;
 import ch.uprisesoft.yali.runtime.io.OutputObserver;
+import ch.uprisesoft.yali.runtime.procedures.builtin.MockTurtleManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public class Main {
 
         Interpreter it = new Interpreter();
         it.loadStdLib(oo, ig);
+        MockTurtleManager mtm = new MockTurtleManager();
+        mtm.registerProcedures(it);
         it.addTracer(new PrintingTracer());
 
 //        String input = "to recurse :i\n"
@@ -77,10 +80,21 @@ public class Main {
         //        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
 //        it.run(it.read(input));
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("make \"size 81 / 9").append("\n");
-        sb.append("print :size * 3").append("\n");
-        sb.append("print :size - 4").append("\n");
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("make \"size 81 / 9").append("\n");
+//        sb.append("print :size * 3").append("\n");
+//        sb.append("print :size - 4").append("\n");
+//        Node res = it.run(it.read(sb.toString()));
+
+StringBuilder sb = new StringBuilder();
+        sb.append("make \"angle 90").append("\n");
+        sb.append("to move :dist").append("\n");
+        sb.append("fd :dist").append("\n");
+        sb.append("rt :angle").append("\n");
+        sb.append("fd :dist").append("\n");
+        sb.append("end").append("\n");
+        sb.append("move 100").append("\n");
+        sb.append("print turtlepos").append("\n");
         Node res = it.run(it.read(sb.toString()));
 
 //        StringBuilder sb = new StringBuilder();

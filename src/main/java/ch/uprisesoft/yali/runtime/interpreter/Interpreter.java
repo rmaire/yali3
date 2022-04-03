@@ -55,6 +55,7 @@ public class Interpreter implements OutputObserver {
 
     public void addTracer(Tracer tracer) {
         tracers.add(tracer);
+        env.addTracer(tracer);
     }
 
     public List<Tracer> tracers() {
@@ -228,6 +229,15 @@ public class Interpreter implements OutputObserver {
                 schedule(param.toProcedureCall());
             }
             return true;
+        } else {
+            //define all args in the local scope
+            for(int i = 0; i < call.args().size(); i++) {
+                env.local(call.definition().getArgs().get(i));
+                env.make(
+                        call.definition().getArgs().get(i),
+                        call.args().get(i)
+                );
+            }
         }
 
         if (call.ready() && (call.definition().isNative() || call.definition().isMacro())) {

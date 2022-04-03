@@ -99,7 +99,7 @@ public class Control implements ProcedureProvider {
 
         newVar = args.get(1);
 
-        it.tracers().forEach(t -> t.make(name, newVar, it.env()));
+//        it.tracers().forEach(t -> t.make(name, newVar, it.env()));
         it.env().make(name, newVar);
 
         return newVar;
