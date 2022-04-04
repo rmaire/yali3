@@ -86,7 +86,7 @@ public class Main {
 //        Node res = it.run(it.read(sb.toString()));
 
         StringBuilder sb = new StringBuilder();
-        sb.append("ifelse 3 > 2 [output Yes] [output No]").append("\n");
+        sb.append("(sentence 1 2 3 4)").append("\n");
         Node res = it.run(it.read(sb.toString()));
 
         System.out.println(res);

@@ -84,7 +84,7 @@ public class Call extends Node implements Iterator {
      * @return true if all arguments are evaluated, false otherwise
      */
     public boolean ready() {
-        return args.size() == definition.getArity();
+        return args.size() == children.size();
     }
     
     public boolean evaluated() {

@@ -203,11 +203,9 @@ public class Interpreter implements OutputObserver {
             // result. If not, add it to the args
 //            System.out.println("HERE: " + stack.peek().getName() + " -> " + stack.peek().ready() + " -> " + stack.peek().evaluated());
             if (stack.peek().ready() && !stack.peek().evaluated()) {
-//                System.out.println("Set result to " + stack.peek().getName());
                 stack.peek().result(lastResult);
                 return true;
             } else {
-//                System.out.println("Add arg to " + stack.peek().getName());
                 stack.peek().arg(lastResult);
             }
             return true;
@@ -228,7 +226,7 @@ public class Interpreter implements OutputObserver {
             return true;
         } else {
             //define all args in the local scope
-            for(int i = 0; i < call.args().size(); i++) {
+            for(int i = 0; i < call.definition().getArity(); i++) {
                 env.local(call.definition().getArgs().get(i));
                 env.make(
                         call.definition().getArgs().get(i),
