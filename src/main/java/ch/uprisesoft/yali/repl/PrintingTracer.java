@@ -5,6 +5,7 @@
  */
 package ch.uprisesoft.yali.repl;
 
+import ch.uprisesoft.yali.ast.node.Call;
 import ch.uprisesoft.yali.ast.node.Node;
 import ch.uprisesoft.yali.runtime.interpreter.Tracer;
 import ch.uprisesoft.yali.scope.Environment;
@@ -98,6 +99,11 @@ public class PrintingTracer implements Tracer {
     @Override
     public void arg(String name, Node val, Environment env) {
         System.out.println("Evaluating argument for Call " + name + " -> " + val);
+    }
+
+    @Override
+    public void schedule(String name, Call call, Environment env) {
+        System.out.println("Scheduling " + name + ": " + call);
     }
 
 }

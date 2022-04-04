@@ -47,7 +47,7 @@ public class Interpreter implements OutputObserver {
     private boolean paused = false;
 
     private java.util.Stack<Call> stack = new java.util.Stack<>();
-    
+
     private Node lastResult;
 
     public Interpreter() {
@@ -88,10 +88,10 @@ public class Interpreter implements OutputObserver {
 
         }
 
-        if(lastResult != null) {
+        if (lastResult != null) {
             return lastResult;
         }
-        
+
         if (stack.size() > 0) {
             return stack.pop().result();
         }
@@ -110,10 +110,10 @@ public class Interpreter implements OutputObserver {
         while (tick()) {
         }
 
-        if(lastResult != null) {
+        if (lastResult != null) {
             return lastResult;
         }
-        
+
         return stack.pop().result();
     }
 
@@ -159,8 +159,8 @@ public class Interpreter implements OutputObserver {
     public Environment env() {
         return env;
     }
-    
-    public Node output(Node output){
+
+    public Node output(Node output) {
         lastResult = output;
         return output;
     }
@@ -181,10 +181,10 @@ public class Interpreter implements OutputObserver {
         if (stack.size() == 1 && stack.peek().evaluated()) {
             return false;
         }
-        
+
         tracers.forEach(t -> t.apply(stack.peek()));
-        
-        if(stack.peek().evaluated()) {
+
+        if (stack.peek().evaluated()) {
             lastResult = stack.peek().result();
         }
 
@@ -226,7 +226,7 @@ public class Interpreter implements OutputObserver {
             return true;
         } else {
             //define all args in the local scope
-            for(int i = 0; i < call.definition().getArity(); i++) {
+            for (int i = 0; i < call.definition().getArity(); i++) {
                 env.local(call.definition().getArgs().get(i));
                 env.make(
                         call.definition().getArgs().get(i),
@@ -256,6 +256,12 @@ public class Interpreter implements OutputObserver {
     }
 
     private void schedule(Call call) {
+        tracers.forEach(t -> t.schedule(call.getName(), call, env));
+
+        if (!env.defined(call.getName())) {
+            throw new FunctionNotFoundException(call.getName());
+        }
+
         call.definition(env.procedure(call.getName()));
         stack.push(call);
         if (!call.definition().isMacro()) {

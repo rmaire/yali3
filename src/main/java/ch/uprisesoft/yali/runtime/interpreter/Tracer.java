@@ -5,6 +5,7 @@
  */
 package ch.uprisesoft.yali.runtime.interpreter;
 
+import ch.uprisesoft.yali.ast.node.Call;
 import ch.uprisesoft.yali.ast.node.Node;
 import ch.uprisesoft.yali.scope.Environment;
 import java.util.List;
@@ -18,6 +19,7 @@ public interface Tracer {
     public void start(Node node);
     public void callPrimitive(String name, List<Node> args, Environment env);
     public void call(String name, List<Node> args, Environment env);
+    public void schedule(String name, Call call, Environment env);
     public void arg(String name, Node val, Environment env);
     public void make(String name, Node val, Environment env);
     public void thing(String name, Node val, Environment env);
