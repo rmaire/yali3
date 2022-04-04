@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Disabled;
  *
  * @author rma
  */
+@Disabled
 public class TemplateTest {
         
     private Lexer l;
