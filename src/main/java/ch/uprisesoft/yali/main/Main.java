@@ -85,15 +85,8 @@ public class Main {
 //        sb.append("print :size - 4").append("\n");
 //        Node res = it.run(it.read(sb.toString()));
 
-StringBuilder sb = new StringBuilder();
-        sb.append("make \"angle 90").append("\n");
-        sb.append("to move :dist").append("\n");
-        sb.append("fd :dist").append("\n");
-        sb.append("rt :angle").append("\n");
-        sb.append("fd :dist").append("\n");
-        sb.append("end").append("\n");
-        sb.append("move 100").append("\n");
-        sb.append("turtlepos").append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("ifelse 3 > 2 [output Yes] [output No]").append("\n");
         Node res = it.run(it.read(sb.toString()));
 
         System.out.println(res);

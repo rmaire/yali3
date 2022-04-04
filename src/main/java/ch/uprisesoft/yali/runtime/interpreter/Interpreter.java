@@ -19,7 +19,6 @@ import ch.uprisesoft.yali.ast.node.Call;
 import ch.uprisesoft.yali.ast.node.Node;
 import ch.uprisesoft.yali.exception.NodeTypeException;
 import ch.uprisesoft.yali.ast.node.NodeType;
-import ch.uprisesoft.yali.exception.RecursionException;
 import ch.uprisesoft.yali.parser.Parser;
 import ch.uprisesoft.yali.runtime.io.InputGenerator;
 import ch.uprisesoft.yali.runtime.io.OutputObserver;
@@ -48,6 +47,8 @@ public class Interpreter implements OutputObserver {
     private boolean paused = false;
 
     private java.util.Stack<Call> stack = new java.util.Stack<>();
+    
+    private Node lastResult;
 
     public Interpreter() {
         env.push(new Scope("global"));
@@ -87,6 +88,10 @@ public class Interpreter implements OutputObserver {
 
         }
 
+        if(lastResult != null) {
+            return lastResult;
+        }
+        
         if (stack.size() > 0) {
             return stack.pop().result();
         }
@@ -105,6 +110,10 @@ public class Interpreter implements OutputObserver {
         while (tick()) {
         }
 
+        if(lastResult != null) {
+            return lastResult;
+        }
+        
         return stack.pop().result();
     }
 
@@ -121,6 +130,7 @@ public class Interpreter implements OutputObserver {
     }
 
     public Node resume() {
+        tracers.forEach(t -> t.resume(stack.peek()));
         paused = false;
 
         while (tick()) {
@@ -130,7 +140,7 @@ public class Interpreter implements OutputObserver {
     }
 
     public void pause() {
-//        tracers.forEach(t -> t.pause(stack.currentCall()));
+        tracers.forEach(t -> t.pause(stack.peek()));
         paused = true;
     }
 
@@ -139,18 +149,20 @@ public class Interpreter implements OutputObserver {
     }
 
     public Node read(String source) {
-        tracers.forEach(t -> t.parse(source));
-        Node node = new Parser(this).read(source);
-        return node;
+        return new Parser(this).read(source);
     }
 
     public Node read(ch.uprisesoft.yali.ast.node.List list) {
-//        tracers.forEach(t -> t.parse(source));
         return new Parser(this).read(list);
     }
 
     public Environment env() {
         return env;
+    }
+    
+    public Node output(Node output){
+        lastResult = output;
+        return output;
     }
 
     public boolean tick() {
@@ -164,12 +176,16 @@ public class Interpreter implements OutputObserver {
             return false;
         }
 
-        tracers.forEach(t -> t.apply(stack.peek()));
-
         // If only one evaluated procedure is on the stack, the program is finished
         // and stack.peek.result() gives the final result
         if (stack.size() == 1 && stack.peek().evaluated()) {
             return false;
+        }
+        
+        tracers.forEach(t -> t.apply(stack.peek()));
+        
+        if(stack.peek().evaluated()) {
+            lastResult = stack.peek().result();
         }
 
         // If more than one call is on the stack, and the current call is evaluated,
@@ -189,7 +205,7 @@ public class Interpreter implements OutputObserver {
             if (stack.peek().ready() && !stack.peek().evaluated()) {
 //                System.out.println("Set result to " + stack.peek().getName());
                 stack.peek().result(lastResult);
-                return stack.size() > 1;
+                return true;
             } else {
 //                System.out.println("Add arg to " + stack.peek().getName());
                 stack.peek().arg(lastResult);

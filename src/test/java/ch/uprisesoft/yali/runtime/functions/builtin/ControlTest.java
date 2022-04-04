@@ -317,8 +317,7 @@ public class ControlTest {
         sb.append("if :testvar [print \"Yes]").append("\n");
         Node res = it.run(it.read(sb.toString()));
 
-        assertThat(res.type(), is(NodeType.BOOLEAN));
-        assertThat(res.toBooleanWord().getBoolean(), is(false));
+        assertThat(res.type(), is(NodeType.NIL));
         assertThat(outputs.size(), is(0));
     }
 

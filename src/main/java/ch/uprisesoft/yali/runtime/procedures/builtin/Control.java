@@ -129,7 +129,6 @@ public class Control implements ProcedureProvider {
 
     public Node ifexpr(Scope scope, java.util.List<Node> args) {
         Node result = Node.none();
-//        it.apply(args.get(0));
         Node condition = args.get(0);
         Node iftrue = args.get(1);
 
@@ -138,9 +137,9 @@ public class Control implements ProcedureProvider {
         }
 
         if (condition.toBooleanWord().getBoolean()) {
-            result = run(scope, iftrue.toList());
+            result = it.output(run(scope, iftrue.toList()));
         } else {
-            result = Node.nil();
+            result = it.output(Node.nil());
         }
 
         return result;
@@ -218,7 +217,7 @@ public class Control implements ProcedureProvider {
     }
 
     public Node output(Scope scope, java.util.List<Node> args) {
-        return args.get(0);
+        return it.output(args.get(0));
     }
 
     public Node stop(Scope scope, java.util.List<Node> args) {
