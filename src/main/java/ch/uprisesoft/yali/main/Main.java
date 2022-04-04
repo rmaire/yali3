@@ -79,28 +79,24 @@ public class Main {
 //
         //        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
 //        it.run(it.read(input));
-
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("make \"size 81 / 9").append("\n");
 //        sb.append("print :size * 3").append("\n");
 //        sb.append("print :size - 4").append("\n");
 //        Node res = it.run(it.read(sb.toString()));
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("make \"testvar \"Bye!").append("\n");
-        sb.append("\n");
-        sb.append("to testfun").append("\n");
-        sb.append("local \"testvar").append("\n");
-        sb.append("make \"testvar \"Hello!").append("\n");
-        sb.append("print :testvar").append("\n");
+StringBuilder sb = new StringBuilder();
+        sb.append("make \"angle 90").append("\n");
+        sb.append("to move :dist").append("\n");
+        sb.append("fd :dist").append("\n");
+        sb.append("rt :angle").append("\n");
+        sb.append("fd :dist").append("\n");
         sb.append("end").append("\n");
-        sb.append("\n");
-        sb.append("testfun").append("\n");
-        sb.append("\n");
-        sb.append("print :testvar").append("\n");
-
+        sb.append("move 100").append("\n");
+        sb.append("turtlepos").append("\n");
         Node res = it.run(it.read(sb.toString()));
-//        System.out.println(res);
+
+        System.out.println(res);
 
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("make \"first_programmer \"Ada_Lovelace").append("\n");
