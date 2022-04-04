@@ -86,16 +86,21 @@ public class Main {
 //        sb.append("print :size - 4").append("\n");
 //        Node res = it.run(it.read(sb.toString()));
 
-StringBuilder sb = new StringBuilder();
-        sb.append("make \"angle 90").append("\n");
-        sb.append("to move :dist").append("\n");
-        sb.append("fd :dist").append("\n");
-        sb.append("rt :angle").append("\n");
-        sb.append("fd :dist").append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("make \"testvar \"Bye!").append("\n");
+        sb.append("\n");
+        sb.append("to testfun").append("\n");
+        sb.append("local \"testvar").append("\n");
+        sb.append("make \"testvar \"Hello!").append("\n");
+        sb.append("print :testvar").append("\n");
         sb.append("end").append("\n");
-        sb.append("move 100").append("\n");
-        sb.append("print turtlepos").append("\n");
+        sb.append("\n");
+        sb.append("testfun").append("\n");
+        sb.append("\n");
+        sb.append("print :testvar").append("\n");
+
         Node res = it.run(it.read(sb.toString()));
+//        System.out.println(res);
 
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("make \"first_programmer \"Ada_Lovelace").append("\n");

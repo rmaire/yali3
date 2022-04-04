@@ -66,7 +66,7 @@ public class Call extends Node implements Iterator {
     }
     
     public boolean hasMoreCalls() {
-        return callPos >= children.size()-1;
+        return callPos <= definition.getChildren().size()-1;
     }
     
     public Call nextCall(){
@@ -84,14 +84,22 @@ public class Call extends Node implements Iterator {
      * @return true if all arguments are evaluated, false otherwise
      */
     public boolean ready() {
-        if(definition == null) {
-            System.out.println("DEFINITION: " + name);
-        }
         return args.size() == definition.getArity();
     }
     
     public boolean evaluated() {
-        return result != null;
+        // A native procedure is evaluated when it has a result
+        boolean isNativeAndEvaluated = definition().isNative()
+                && result != null;
+
+        // A user defined procedure is evaluated when it has no more calls and a result
+        boolean isUserDefinedAndEvaluated = !definition().isNative()
+                && !hasMoreCalls()
+                && result != null;
+        
+//        System.out.println("CALL " + name + " -> " + isNativeAndEvaluated + "/" + isUserDefinedAndEvaluated);
+        
+        return isNativeAndEvaluated || isUserDefinedAndEvaluated;
     }
 
     public Node result() {
