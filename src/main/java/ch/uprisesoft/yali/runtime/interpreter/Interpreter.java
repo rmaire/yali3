@@ -47,6 +47,7 @@ public class Interpreter implements OutputObserver {
     private boolean paused = false;
 
     private java.util.Stack<Call> stack = new java.util.Stack<>();
+    private java.util.List<Call> program = new ArrayList<>();
 
     private Node lastResult;
 
@@ -77,10 +78,6 @@ public class Interpreter implements OutputObserver {
 
             Call call = n.toProcedureCall();
 
-            if (!env.defined(call.getName())) {
-                throw new FunctionNotFoundException(call.getName());
-            }
-
             schedule(call);
 
             while (tick()) {
@@ -100,10 +97,6 @@ public class Interpreter implements OutputObserver {
 
     public Node run(Call call) {
         tracers.forEach(t -> t.run(call));
-
-        if (!env.defined(call.getName())) {
-            throw new FunctionNotFoundException(call.getName());
-        }
 
         schedule(call);
 
