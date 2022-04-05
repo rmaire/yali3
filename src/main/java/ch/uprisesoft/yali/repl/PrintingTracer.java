@@ -106,4 +106,9 @@ public class PrintingTracer implements Tracer {
         System.out.println("Scheduling " + name + ": " + call);
     }
 
+    @Override
+    public void unschedule(String name, Call call, Environment env) {
+        System.out.println("Unscheduling " + name + ": " + call);
+    }
+
 }

@@ -31,7 +31,8 @@ public class Call extends Node implements Iterator {
     private Procedure definition;
     private Node result;
     private int callPos = 0;
-    
+    private boolean evaluated = false;
+
     public Call(String name) {
         super(NodeType.PROCCALL);
         this.name = name;
@@ -46,8 +47,9 @@ public class Call extends Node implements Iterator {
     public void definition(Procedure definition) {
         this.definition = definition;
     }
-    
+
     public void arg(Node arg) {
+        System.out.println("ADDING ARG " + arg + " TO " + name);
         this.args.add(arg);
     }
 
@@ -59,47 +61,57 @@ public class Call extends Node implements Iterator {
         this.args.clear();
         this.args.addAll(args);
     }
-    
+
     public Node nextParameter() {
-        int next = args.size();
-        return children.get(next);
+//        System.out.println(name + ": GET CHILD " + (paramPos+1) + " OF " + children.size() + " -> " + children.get(paramPos));
+        return children.get(args.size());
     }
-    
+
     public boolean hasMoreCalls() {
-        return callPos <= definition.getChildren().size()-1;
+        return callPos <= definition.getChildren().size() - 1;
     }
-    
-    public Call nextCall(){
-        return definition.getChildren().get(callPos++).toProcedureCall();
+
+    public Call nextCall() {
+        Call next = definition.getChildren().get(callPos++).toProcedureCall();
+        return next;
     }
-    
+
     public void reset() {
         callPos = 0;
         args.clear();
         result = null;
     }
-    
+
     /**
      * Checks if all arguments are evaluated
+     *
      * @return true if all arguments are evaluated, false otherwise
      */
-    public boolean ready() {
-        return args.size() == children.size();
+    public boolean hasMoreParameters() {
+        boolean more = args.size() < children.size();
+        if (!more) {
+            System.out.println(name + " READY WITH " + args.size() + " ARGS!");
+        }
+        return more;
     }
-    
-    public boolean evaluated() {
-        // A native procedure is evaluated when it has a result
-        boolean isNativeAndEvaluated = definition().isNative()
-                && result != null;
 
-        // A user defined procedure is evaluated when it has no more calls and a result
-        boolean isUserDefinedAndEvaluated = !definition().isNative()
-                && !hasMoreCalls()
-                && result != null;
-        
-//        System.out.println("CALL " + name + " -> " + isNativeAndEvaluated + "/" + isUserDefinedAndEvaluated);
-        
-        return isNativeAndEvaluated || isUserDefinedAndEvaluated;
+    public void evaluated(boolean e) {
+        this.evaluated = e;
+    }
+
+    public boolean evaluated() {
+//        // A native procedure is evaluated when it has a result
+//        boolean isNativeAndEvaluated = definition().isNative()
+//                && evaluated;
+//
+//        // A user defined procedure is evaluated when it has no more calls and a result
+//        boolean isUserDefinedAndEvaluated = !definition().isNative()
+//                && !hasMoreCalls()
+//                && result != null;
+//        
+////        System.out.println("CALL " + name + " -> " + isNativeAndEvaluated + "/" + isUserDefinedAndEvaluated);
+//        
+        return evaluated;
     }
 
     public Node result() {
