@@ -86,9 +86,17 @@ public class Main {
 //        Node res = it.run(it.read(sb.toString()));
 
         StringBuilder sb = new StringBuilder();
-        sb.append("run [make \"testvar \"yes]").append("\n");
-        sb.append("print :testvar").append("\n");
-        Node res = it.run(it.read(sb.toString()));
+        sb.append("to pausetest").append("\n");
+        sb.append("if (1 > 0) [pause print \"two]").append("\n");
+        sb.append("end").append("\n");
+        sb.append("\n");
+        sb.append("print \"one").append("\n");
+        sb.append("pause").append("\n");
+        sb.append("pausetest").append("\n");
+
+        it.run(it.read(sb.toString()));
+        it.resume();
+        it.resume();
 
 //        System.out.println(res);
 

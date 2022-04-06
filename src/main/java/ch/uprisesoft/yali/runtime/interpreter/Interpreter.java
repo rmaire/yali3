@@ -33,7 +33,6 @@ import ch.uprisesoft.yali.scope.Environment;
 import ch.uprisesoft.yali.scope.Scope;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  *

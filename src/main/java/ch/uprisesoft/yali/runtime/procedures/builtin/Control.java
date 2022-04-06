@@ -239,7 +239,7 @@ public class Control implements ProcedureProvider {
         it.env().define(new Procedure("stop", (scope, val) -> this.output(scope, val)));
         it.env().define(new Procedure("ifelse", (scope, val) -> this.ifelseexpr(scope, val), "condition", "iftrue", "iffalse").macro());
         it.env().define(new Procedure("if", (scope, val) -> this.ifexpr(scope, val), "condition", "iftrue").macro());
-        it.env().define(new Procedure("pause", (scope, val) -> this.pause(scope, val)));
+        it.env().define(new Procedure("pause", (scope, val) -> this.pause(scope, val)).macro());
 
         return it;
     }
