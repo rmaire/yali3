@@ -218,7 +218,7 @@ public class Interpreter implements OutputObserver {
                 stack.peek().arg(res);
                 return true;
             } else {
-                stack.peek().result(res);
+                stack.peek().result(res, env.peek());
             }
         }
 
@@ -255,7 +255,7 @@ public class Interpreter implements OutputObserver {
         if (call.definition().isNative()) {
             tracers.forEach(t -> t.callPrimitive(call.getName(), call.args(), env));
             Node result = call.definition().getNativeCall().apply(env.peek(), call.args());
-            call.result(result);
+            call.result(result, env.peek());
             call.evaluated(true);
             return true;
         } else {
@@ -263,7 +263,7 @@ public class Interpreter implements OutputObserver {
                 schedule(call.nextCall());
             } else {
                 call.evaluated(true);
-                call.result(lastResult);
+                call.result(lastResult, env.peek());
             }
             return true;
         }

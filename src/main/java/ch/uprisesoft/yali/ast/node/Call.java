@@ -15,6 +15,7 @@
  */
 package ch.uprisesoft.yali.ast.node;
 
+import ch.uprisesoft.yali.scope.Scope;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -101,7 +102,10 @@ public class Call extends Node implements Iterator {
         return result;
     }
 
-    public void result(Node result) {
+    public void result(Node result, Scope scope) {
+        if(definition.isNative()) {
+            definition.getResultCallback().apply(scope, args);
+        }
         this.result = result;
     }
 

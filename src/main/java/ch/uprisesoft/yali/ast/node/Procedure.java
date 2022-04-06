@@ -30,6 +30,7 @@ public class Procedure extends Node {
     private String name;
     private java.util.List<String> args = new ArrayList<>();
     private BiFunction<Scope, java.util.List<Node>, Node> nativeCall;
+    private BiFunction<Scope, java.util.List<Node>, Node> resultCallback;
     private String source;
 
     FunctionType funType = FunctionType.YALI;
@@ -51,6 +52,7 @@ public class Procedure extends Node {
         this.funType = FunctionType.NATIVE;
         this.name = name;
         this.nativeCall = nativeCall;
+        this.resultCallback = resultCallback;
         for(String arg: args) {
             this.args.add(arg);
         }
@@ -69,6 +71,10 @@ public class Procedure extends Node {
 
     public BiFunction<Scope, java.util.List<Node>, Node> getNativeCall() {
         return nativeCall;
+    }
+    
+    public BiFunction<Scope, java.util.List<Node>, Node> getResultCallback() {
+        return resultCallback;
     }
 
     public Boolean isNative() {
