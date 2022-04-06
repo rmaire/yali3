@@ -58,7 +58,7 @@ public class Main {
         it.loadStdLib(oo, ig);
         MockTurtleManager mtm = new MockTurtleManager();
         mtm.registerProcedures(it);
-//        it.addTracer(new PrintingTracer());
+        it.addTracer(new PrintingTracer());
 
 //        String input = "to recurse :i\n"
 //                + "print :i\n"
@@ -99,7 +99,8 @@ public class Main {
         sb.append("make \"first_programmer [Ada Lovelace]").append("\n");
         sb.append("print :first_programmer").append("\n");
         
-        Node res = it.run(it.read(sb.toString()));
+        it.load(it.read(sb.toString()));
+        Node res = it.run();
         System.out.println(res);
         
 //        StringBuilder sb = new StringBuilder();

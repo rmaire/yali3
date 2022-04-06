@@ -89,20 +89,30 @@ public class Interpreter implements OutputObserver {
     public Node run(Call call) {
         tracers.forEach(t -> t.run(call));
 
-        program.add(call);
+        load(call);
 
         return run();
     }
-    
+
     public Node run() {
         while (tick()) {
         }
 
         return lastResult;
     }
-    
+
     public void load(Call call) {
+        tracers.forEach(t -> t.load(call));
+        program.add(call);
+    }
     
+    public void load(Node node) {
+        tracers.forEach(t -> t.load(node));
+        
+        for (Node n : node.getChildren()) {
+            Call call = n.toProcedureCall();
+            load(call);
+        }
     }
 
     public Node runBounded(Node node) {
@@ -119,7 +129,6 @@ public class Interpreter implements OutputObserver {
         while (tick()) {
         }
 
-        
         if (!paused) {
             restoreStack();
         }
