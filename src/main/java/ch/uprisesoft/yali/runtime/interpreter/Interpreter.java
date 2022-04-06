@@ -173,19 +173,24 @@ public class Interpreter implements OutputObserver {
             Call evaluatedCall = unschedule();
             Node res = evaluatedCall.result();
             if(stack.empty() && !program.isEmpty()) {
+                System.out.println("Case stack.empty() && !program.isEmpty() -> true");
                 lastResult = res;
                 return true;
             } else if (stack.empty() && program.isEmpty()){
+                System.out.println("Case stack.empty() && program.isEmpty() -> false");
                 lastResult = res;
                 return false;
-            }  else if (stack.size() == 1 && program.isEmpty()) {
+            }  else if (stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()) {
+                System.out.println("stack.size() == 1 && stack.peek().evaluated() && program.isEmpty() -> false");
                 lastResult = res;
                 return false;
             } else if (stack.peek().hasMoreParameters()){
+                System.out.println("Case stack.peek().hasMoreParameters() -> true");
                 System.out.println(stack.peek() + " HAS MORE PARAMETERS");
                 stack.peek().arg(res);
                 return true;
             } else {
+                System.out.println("Case else -> continue");
                 stack.peek().result(res);
             }
         }
