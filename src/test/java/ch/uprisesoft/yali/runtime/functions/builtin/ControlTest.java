@@ -230,7 +230,7 @@ public class ControlTest {
         sb.append("print :testvar").append("\n");
         Node res = it.run(it.read(sb.toString()));
 
-        assertThat(res.type(), is(NodeType.NIL));
+        assertThat(res.type(), is(NodeType.LIST));
 //        assertThat(it.scope().defined("testvar"), is(true));
         assertThat(it.env().thing("testvar").type(), is(NodeType.QUOTE));
         assertThat(it.env().thing("testvar").toQuotedWord().getQuote(), is("yes"));

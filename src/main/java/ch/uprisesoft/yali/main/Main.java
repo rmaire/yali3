@@ -58,7 +58,7 @@ public class Main {
         it.loadStdLib(oo, ig);
         MockTurtleManager mtm = new MockTurtleManager();
         mtm.registerProcedures(it);
-        it.addTracer(new PrintingTracer());
+//        it.addTracer(new PrintingTracer());
 
 //        String input = "to recurse :i\n"
 //                + "print :i\n"
@@ -85,7 +85,7 @@ public class Main {
 //        sb.append("print :size - 4").append("\n");
 //        Node res = it.run(it.read(sb.toString()));
 
-        Node result = it.run(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
+//        Node result = it.run(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
 
 //        System.out.println(res);
 
@@ -95,9 +95,13 @@ public class Main {
 //
 //        System.out.println(res);
 
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("make \"first_programmer \"Ada_Lovelace").append("\n");
-//        sb.append("print :first_programmer").append("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("make \"first_programmer [Ada Lovelace]").append("\n");
+        sb.append("print :first_programmer").append("\n");
+        
+        Node res = it.run(it.read(sb.toString()));
+        System.out.println(res);
+        
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("to pausetest").append("\n");
 //        sb.append("if (1 > 0) [pause print \"two]").append("\n");

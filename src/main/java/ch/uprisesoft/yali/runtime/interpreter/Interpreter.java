@@ -99,6 +99,10 @@ public class Interpreter implements OutputObserver {
 
         return lastResult;
     }
+    
+    public void load(Call call) {
+    
+    }
 
     public Node runBounded(Node node) {
 //        tracers.forEach(t -> t.run(node));
