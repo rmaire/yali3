@@ -111,4 +111,9 @@ public class PrintingTracer implements Tracer {
         System.out.println("Unscheduling " + name + ": " + call);
     }
 
+    @Override
+    public void load(Node val) {
+        System.out.println("Loading " + val);
+    }
+
 }

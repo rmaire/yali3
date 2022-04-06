@@ -28,6 +28,7 @@ public interface Tracer {
     public void scope(String name, Environment env);
     public void unscope(String name, Environment env);
     public void run(Node val);
+    public void load(Node val);
     public void tick(Node val);
     public void apply(Node val);
     public void pause(Node val);

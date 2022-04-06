@@ -83,10 +83,7 @@ public class Interpreter implements OutputObserver {
             program.add(call);
         }
 
-        while (tick()) {
-        }
-
-        return lastResult;
+        return run();
     }
 
     public Node run(Call call) {
@@ -94,6 +91,10 @@ public class Interpreter implements OutputObserver {
 
         program.add(call);
 
+        return run();
+    }
+    
+    public Node run() {
         while (tick()) {
         }
 
