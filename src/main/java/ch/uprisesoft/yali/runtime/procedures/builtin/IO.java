@@ -121,11 +121,11 @@ public class IO implements ProcedureProvider, OutputSubject, InputReceiver {
     public Interpreter registerProcedures(Interpreter it) {
         this.it = it;
         
-        it.env().define(new Procedure("readword", (scope, val) -> this.readword(scope, val)));
-        it.env().define(new Procedure("readlist", (scope, val) -> this.readlist(scope, val)));
-        it.env().define(new Procedure("show", (scope, val) -> this.show(scope, val), "output"));
-        it.env().define(new Procedure("type", (scope, val) -> this.type(scope, val), "output"));
-        it.env().define(new Procedure("print", (scope, val) -> this.print(scope, val), "output"));
+        it.env().define(new Procedure("readword", (scope, val) -> this.readword(scope, val), (scope, val) -> Node.none()));
+        it.env().define(new Procedure("readlist", (scope, val) -> this.readlist(scope, val), (scope, val) -> Node.none()));
+        it.env().define(new Procedure("show", (scope, val) -> this.show(scope, val), (scope, val) -> Node.none(), "output"));
+        it.env().define(new Procedure("type", (scope, val) -> this.type(scope, val), (scope, val) -> Node.none(), "output"));
+        it.env().define(new Procedure("print", (scope, val) -> this.print(scope, val), (scope, val) -> Node.none(), "output"));
 
         return it;
     }

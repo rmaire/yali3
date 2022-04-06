@@ -472,28 +472,28 @@ public class Data implements ProcedureProvider {
     public Interpreter registerProcedures(Interpreter it) {
         this.it = it;
 
-        it.env().define(new Procedure("uppercase", (scope, val) -> this.uppercase(scope, val), "element"));
-        it.env().define(new Procedure("lowercase", (scope, val) -> this.lowercase(scope, val), "element"));
-        it.env().define(new Procedure("count", (scope, val) -> this.count(scope, val), "element"));
-        it.env().define(new Procedure("equal?", (scope, val) -> this.equalp(scope, val), "fst", "snd"));
-        it.env().define(new Procedure("member?", (scope, val) -> this.memberp(scope, val), "fst", "snd"));
-        it.env().define(new Procedure("list?", (scope, val) -> this.listp(scope, val), "list"));
-        it.env().define(new Procedure("number?", (scope, val) -> this.numberp(scope, val), "number"));
-        it.env().define(new Procedure("word?", (scope, val) -> this.wordp(scope, val), "word"));
-        it.env().define(new Procedure("empty?", (scope, val) -> this.emptyp(scope, val), "list"));
-        it.env().define(new Procedure("setitem", (scope, val) -> this.setitem(scope, val), "index", "list", "newval"));
-        it.env().define(new Procedure("item", (scope, val) -> this.item(scope, val), "index", "listorword"));
-        it.env().define(new Procedure("butlast", (scope, val) -> this.butlast(scope, val), "listorword"));
-        it.env().define(new Procedure("butfirst", (scope, val) -> this.butfirst(scope, val), "listorword"));
-        it.env().define(new Procedure("last", (scope, val) -> this.last(scope, val), "listorword"));
-        it.env().define(new Procedure("first", (scope, val) -> this.first(scope, val), "listorword"));
-        it.env().define(new Procedure("reverse", (scope, val) -> this.reverse(scope, val), "list"));
-        it.env().define(new Procedure("fput", (scope, val) -> this.fput(scope, val), "fst", "snd"));
-        it.env().define(new Procedure("lput", (scope, val) -> this.lput(scope, val), "fst", "snd"));
-        it.env().define(new Procedure("word", (scope, val) -> this.word(scope, val), "fst", "snd"));
-        it.env().define(new Procedure("list", (scope, val) -> this.list(scope, val), "fst", "snd"));
-        it.env().define(new Procedure("sentence", (scope, val) -> this.sentence(scope, val), "fst", "snd"));
-        it.env().define(new Procedure("gensym", (scope, val) -> this.gensym(scope, val)));
+        it.env().define(new Procedure("uppercase", (scope, val) -> this.uppercase(scope, val), (scope, val) -> Node.none(), "element"));
+        it.env().define(new Procedure("lowercase", (scope, val) -> this.lowercase(scope, val), (scope, val) -> Node.none(), "element"));
+        it.env().define(new Procedure("count", (scope, val) -> this.count(scope, val), (scope, val) -> Node.none(), "element"));
+        it.env().define(new Procedure("equal?", (scope, val) -> this.equalp(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
+        it.env().define(new Procedure("member?", (scope, val) -> this.memberp(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
+        it.env().define(new Procedure("list?", (scope, val) -> this.listp(scope, val), (scope, val) -> Node.none(), "list"));
+        it.env().define(new Procedure("number?", (scope, val) -> this.numberp(scope, val), (scope, val) -> Node.none(), "number"));
+        it.env().define(new Procedure("word?", (scope, val) -> this.wordp(scope, val), (scope, val) -> Node.none(), "word"));
+        it.env().define(new Procedure("empty?", (scope, val) -> this.emptyp(scope, val), (scope, val) -> Node.none(), "list"));
+        it.env().define(new Procedure("setitem", (scope, val) -> this.setitem(scope, val), (scope, val) -> Node.none(), "index", "list", "newval"));
+        it.env().define(new Procedure("item", (scope, val) -> this.item(scope, val), (scope, val) -> Node.none(), "index", "listorword"));
+        it.env().define(new Procedure("butlast", (scope, val) -> this.butlast(scope, val), (scope, val) -> Node.none(), "listorword"));
+        it.env().define(new Procedure("butfirst", (scope, val) -> this.butfirst(scope, val), (scope, val) -> Node.none(), "listorword"));
+        it.env().define(new Procedure("last", (scope, val) -> this.last(scope, val), (scope, val) -> Node.none(), "listorword"));
+        it.env().define(new Procedure("first", (scope, val) -> this.first(scope, val), (scope, val) -> Node.none(), "listorword"));
+        it.env().define(new Procedure("reverse", (scope, val) -> this.reverse(scope, val), (scope, val) -> Node.none(), "list"));
+        it.env().define(new Procedure("fput", (scope, val) -> this.fput(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
+        it.env().define(new Procedure("lput", (scope, val) -> this.lput(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
+        it.env().define(new Procedure("word", (scope, val) -> this.word(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
+        it.env().define(new Procedure("list", (scope, val) -> this.list(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
+        it.env().define(new Procedure("sentence", (scope, val) -> this.sentence(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
+        it.env().define(new Procedure("gensym", (scope, val) -> this.gensym(scope, val), (scope, val) -> Node.none()));
 
         return it;
     }

@@ -43,7 +43,10 @@ public class Procedure extends Node {
         this.name = name;
     }
     
-    public Procedure(String name, BiFunction<Scope, java.util.List<Node>, Node> nativeCall, String... args) {
+    public Procedure(String name, 
+            BiFunction<Scope, java.util.List<Node>, Node> nativeCall, 
+            BiFunction<Scope, java.util.List<Node>, Node> resultCallback, 
+            String... args) {
         this();
         this.funType = FunctionType.NATIVE;
         this.name = name;
