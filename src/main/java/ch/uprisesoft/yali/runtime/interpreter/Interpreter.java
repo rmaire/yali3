@@ -105,12 +105,23 @@ public class Interpreter implements OutputObserver {
 
         bounded = true;
         saveStack();
+        System.out.println("BOUNDED!!!!");
 
-        Node result = run(node);
+        for (Node n : node.getChildren()) {
+            Call call = n.toProcedureCall();
+            program.add(call);
+        }
 
-        restoreStack();
+        while (tick()) {
+        }
+
         
-        return result;
+        if (!paused) {
+            System.out.println("UNBOUNDED!!!!");
+            restoreStack();
+        }
+
+        return lastResult;
     }
 
     private void saveStack() {
@@ -121,7 +132,7 @@ public class Interpreter implements OutputObserver {
         program = new java.util.ArrayList<>();
         bounded = false;
     }
-    
+
     private void restoreStack() {
         stack = saveStack;
         program = saveProgram;
@@ -164,7 +175,7 @@ public class Interpreter implements OutputObserver {
     }
 
     public boolean tick() {
-//        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
+        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
 
         // Global Program state
         if (paused) {
@@ -176,13 +187,13 @@ public class Interpreter implements OutputObserver {
             // If both program and stack are empty, execution is finished or no
             // program was loaded in the first place
             if (program.isEmpty()) {
-                
+
                 // TODO: check
-                if(bounded) {
+                if (bounded) {
                     restoreStack();
                     return true;
                 }
-                
+
                 return false;
             } else {
                 schedule(program.remove(0));
