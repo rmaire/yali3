@@ -99,12 +99,16 @@ public class Interpreter implements OutputObserver {
     public Node runBounded(Node node) {
 //        tracers.forEach(t -> t.run(node));
 
-        java.util.Stack<Call> save = stack;
+        java.util.Stack<Call> saveStack = stack;
+        java.util.List<Call> saveProgram = program;
+        
         stack = new java.util.Stack<>();
+        program = new java.util.ArrayList<>();
 
         Node result = run(node);
 
-        stack = save;
+        stack = saveStack;
+        program = saveProgram;
         return result;
     }
 

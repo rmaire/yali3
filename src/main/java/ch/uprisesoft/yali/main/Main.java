@@ -58,7 +58,7 @@ public class Main {
         it.loadStdLib(oo, ig);
         MockTurtleManager mtm = new MockTurtleManager();
         mtm.registerProcedures(it);
-//        it.addTracer(new PrintingTracer());
+        it.addTracer(new PrintingTracer());
 
 //        String input = "to recurse :i\n"
 //                + "print :i\n"
@@ -85,10 +85,10 @@ public class Main {
 //        sb.append("print :size - 4").append("\n");
 //        Node res = it.run(it.read(sb.toString()));
 
-        String input = "make varone \"test\n";
-        input += "print :varone\n";
-
-        Node res = it.run(it.read(input));
+        StringBuilder sb = new StringBuilder();
+        sb.append("run [make \"testvar \"yes]").append("\n");
+        sb.append("print :testvar").append("\n");
+        Node res = it.run(it.read(sb.toString()));
 
 //        System.out.println(res);
 
