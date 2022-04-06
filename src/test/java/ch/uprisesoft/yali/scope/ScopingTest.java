@@ -160,7 +160,7 @@ public class ScopingTest {
     }
 
     @Test
-    public void testLMakeInProcedureinBlock() {
+    public void testMakeInProcedureinBlock() {
         StringBuilder sb = new StringBuilder();
         sb.append("to makeinproc").append("\n");
         sb.append("if true [make \"testvar 10]").append("\n");
