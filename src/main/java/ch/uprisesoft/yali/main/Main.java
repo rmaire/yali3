@@ -85,18 +85,7 @@ public class Main {
 //        sb.append("print :size - 4").append("\n");
 //        Node res = it.run(it.read(sb.toString()));
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("to pausetest").append("\n");
-        sb.append("if (1 > 0) [pause print \"two]").append("\n");
-        sb.append("end").append("\n");
-        sb.append("\n");
-        sb.append("print \"one").append("\n");
-        sb.append("pause").append("\n");
-        sb.append("pausetest").append("\n");
-
-        it.run(it.read(sb.toString()));
-        it.resume();
-        it.resume();
+        Node result = it.run(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
 
 //        System.out.println(res);
 

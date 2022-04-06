@@ -105,7 +105,6 @@ public class Interpreter implements OutputObserver {
 
         bounded = true;
         saveStack();
-        System.out.println("BOUNDED!!!!");
 
         for (Node n : node.getChildren()) {
             Call call = n.toProcedureCall();
@@ -117,7 +116,6 @@ public class Interpreter implements OutputObserver {
 
         
         if (!paused) {
-            System.out.println("UNBOUNDED!!!!");
             restoreStack();
         }
 
@@ -175,7 +173,7 @@ public class Interpreter implements OutputObserver {
     }
 
     public boolean tick() {
-        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
+//        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
 
         // Global Program state
         if (paused) {
@@ -188,7 +186,6 @@ public class Interpreter implements OutputObserver {
             // program was loaded in the first place
             if (program.isEmpty()) {
 
-                // TODO: check
                 if (bounded) {
                     restoreStack();
                     return true;
