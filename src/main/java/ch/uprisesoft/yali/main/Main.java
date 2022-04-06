@@ -58,7 +58,7 @@ public class Main {
         it.loadStdLib(oo, ig);
         MockTurtleManager mtm = new MockTurtleManager();
         mtm.registerProcedures(it);
-        it.addTracer(new PrintingTracer());
+//        it.addTracer(new PrintingTracer());
 
 //        String input = "to recurse :i\n"
 //                + "print :i\n"

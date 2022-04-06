@@ -145,7 +145,7 @@ public class Interpreter implements OutputObserver {
     }
 
     public boolean tick() {
-        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
+//        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
 
         // Global Program state
         if (paused) {
@@ -169,28 +169,21 @@ public class Interpreter implements OutputObserver {
         // is the result. Else, deschedule the call and set the result to the
         // previous call. Has to be done before argument handling.
         if (stack.peek().evaluated()) {
-            System.out.println(stack.peek().getName() + " IS EVALUATED: " + stack.peek().result());
             Call evaluatedCall = unschedule();
             Node res = evaluatedCall.result();
             if(stack.empty() && !program.isEmpty()) {
-                System.out.println("Case stack.empty() && !program.isEmpty() -> true");
                 lastResult = res;
                 return true;
             } else if (stack.empty() && program.isEmpty()){
-                System.out.println("Case stack.empty() && program.isEmpty() -> false");
                 lastResult = res;
                 return false;
             }  else if (stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()) {
-                System.out.println("stack.size() == 1 && stack.peek().evaluated() && program.isEmpty() -> false");
                 lastResult = res;
                 return false;
             } else if (stack.peek().hasMoreParameters()){
-                System.out.println("Case stack.peek().hasMoreParameters() -> true");
-                System.out.println(stack.peek() + " HAS MORE PARAMETERS");
                 stack.peek().arg(res);
                 return true;
             } else {
-                System.out.println("Case else -> continue");
                 stack.peek().result(res);
             }
         }
@@ -214,12 +207,6 @@ public class Interpreter implements OutputObserver {
         }
 
         // Procedure evaluation
-        // Non-ready procedures on top of the stack shouldn't reach this part
-        if (stack.peek().hasMoreParameters()) {
-            System.out.println("Non-ready procedure too far in tick()");
-        }
-
-        System.out.println("HIER!!!");
 
         Call call = stack.peek();
 
@@ -247,135 +234,8 @@ public class Interpreter implements OutputObserver {
             }
             return true;
         }
-
-        // Evaluate the next call on the stack. Native procedures are evaluated
-        // with their lambda, 
-        // Check if there's more to do
-//        System.out.println("Should we get here?");
-//        if(!program.isEmpty()) {
-//            return true;
-//        }
-//        
-//        if (stack.size() == 1 && !stack.peek().evaluated()) {
-//            return true;
-//        }
-//        if (stack.size() > 1) {
-//            return true;
-//        }
-//        System.out.println("DEFAULT EXIT: NOT GOOD :(");
-//        return false;
     }
 
-//    public boolean tick() {
-//        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
-//
-//        if (paused) {
-//            return false;
-//        }
-//        
-//        // Nothing happened, no program loaded.
-//        if (stack.empty() && program.isEmpty()) {
-//            return false;
-//        }
-//        
-//        if(!program.isEmpty() && stack.size() == 1 && stack.peek().evaluated()) {
-//            System.out.println("Not finished");
-//            schedule(program.remove(0));
-//            lastResult = stack.pop().result();
-//            return true;
-//        }
-//
-//        // If only one evaluated procedure is on the stack, the program is finished
-//        // and stack.peek.result() gives the final result
-//        if (program.isEmpty() && stack.size() == 1 && stack.peek().evaluated()) {
-//            System.out.println("Finished: " + stack.peek() + " -> " + stack.peek().result());
-//            return false;
-//        }
-//        
-//        if(!program.isEmpty() && stack.size() == 0) {
-//            schedule(program.remove(0));
-//            return true;
-//        }
-//
-//        tracers.forEach(t -> t.apply(stack.peek()));
-//
-//        if (stack.peek().evaluated()) {
-//            lastResult = stack.peek().result();
-//        }
-//
-//        // If more than one call is on the stack, and the current call is evaluated,
-//        // this must be an arg or a result to the previous call. Pop the current call, get it's
-//        // result and add it to the args or the result  of the precious call
-//        if (stack.size() > 1 && stack.peek().evaluated()) {
-//            if (!stack.peek().definition().isMacro()) {
-//                tracers.forEach(t -> t.unscope(env.peek().getScopeName(), env));
-//                env.pop();
-//            }
-//
-//            Node lastResult = stack.pop().result();
-//
-//            // If previous call is ready but has no result, set the last
-//            // result. If not, add it to the args
-////            System.out.println("HERE: " + stack.peek().getName() + " -> " + stack.peek().ready() + " -> " + stack.peek().evaluated());
-//            if (stack.peek().ready() && !stack.peek().evaluated()) {
-//                stack.peek().result(lastResult);
-//                return true;
-//            } else {
-//                stack.peek().arg(lastResult);
-//            }
-//            return true;
-//        }
-//
-//        Call call = stack.peek();
-//
-//        if (!call.ready()) {
-//            Node param = call.nextParameter();
-//
-//            tracers.forEach(t -> t.arg(call.getName(), param, env));
-//
-//            if (!param.type().equals(NodeType.PROCCALL)) {
-//                call.arg(param);
-//            } else {
-//                schedule(param.toProcedureCall());
-//            }
-//            return true;
-//        } else {
-//            //define all args in the local scope
-//            for (int i = 0; i < call.definition().getArity(); i++) {
-//                env.local(call.definition().getArgs().get(i));
-//                env.make(
-//                        call.definition().getArgs().get(i),
-//                        call.args().get(i)
-//                );
-//            }
-//        }
-//
-//        if (call.ready() && (call.definition().isNative() || call.definition().isMacro())) {
-//            tracers.forEach(t -> t.callPrimitive(call.getName(), call.args(), env));
-//            Node result = call.definition().getNativeCall().apply(env.peek(), call.args());
-////            stack.pop();
-//            call.result(result);
-//            call.evaluated(true);
-//        } else if (call.ready() && !call.definition().isNative() && call.hasMoreCalls()) {
-//            tracers.forEach(t -> t.call(call.getName(), call.args(), env));
-//            schedule(call.nextCall());
-//        }
-//
-//        // Check if there's more to do
-//        if(!program.isEmpty()) {
-//            return true;
-//        }
-//        
-//        if (stack.size() == 1 && !stack.peek().evaluated()) {
-//            return true;
-//        }
-//        if (stack.size() > 1) {
-//            return true;
-//        }
-//
-//        System.out.println("WHYYYY?");
-//        return false;
-//    }
     private Call unschedule() {
         Call call = stack.pop();
         if (!call.definition().isMacro()) {

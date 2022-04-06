@@ -51,13 +51,12 @@ public class Control implements ProcedureProvider {
                 throw new NodeTypeException(args.get(0), args.get(0).type(), NodeType.SYMBOL, NodeType.QUOTE);
         }
 
-        
-        if(!it.env().thingable(name)) {
+        if (!it.env().thingable(name)) {
             throw new VariableNotFoundException(name);
         }
-        
+
         Node value = it.env().thing(name);
-        
+
         it.tracers().forEach(t -> t.thing(name, value, it.env()));
         return value;
     }
@@ -188,11 +187,7 @@ public class Control implements ProcedureProvider {
         Node result = Node.nil();
 
         for (int i = 0; i < idx; i++) {
-            try {
-                result = run(scope, block.toList());
-            } catch (Exception ex) {
-                System.out.println(ex.toString() + " -> repeat 2");
-            }
+            result = run(scope, block.toList());
         }
 
         return result;

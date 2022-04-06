@@ -49,7 +49,6 @@ public class Call extends Node implements Iterator {
     }
 
     public void arg(Node arg) {
-        System.out.println("ADDING ARG " + arg + " TO " + name);
         this.args.add(arg);
     }
 
@@ -63,7 +62,6 @@ public class Call extends Node implements Iterator {
     }
 
     public Node nextParameter() {
-//        System.out.println(name + ": GET CHILD " + (paramPos+1) + " OF " + children.size() + " -> " + children.get(paramPos));
         return children.get(args.size());
     }
 
@@ -88,11 +86,7 @@ public class Call extends Node implements Iterator {
      * @return true if all arguments are evaluated, false otherwise
      */
     public boolean hasMoreParameters() {
-        boolean more = args.size() < children.size();
-        if (!more) {
-            System.out.println(name + " READY WITH " + args.size() + " ARGS!");
-        }
-        return more;
+        return args.size() < children.size();
     }
 
     public void evaluated(boolean e) {
@@ -100,17 +94,6 @@ public class Call extends Node implements Iterator {
     }
 
     public boolean evaluated() {
-//        // A native procedure is evaluated when it has a result
-//        boolean isNativeAndEvaluated = definition().isNative()
-//                && evaluated;
-//
-//        // A user defined procedure is evaluated when it has no more calls and a result
-//        boolean isUserDefinedAndEvaluated = !definition().isNative()
-//                && !hasMoreCalls()
-//                && result != null;
-//        
-////        System.out.println("CALL " + name + " -> " + isNativeAndEvaluated + "/" + isUserDefinedAndEvaluated);
-//        
         return evaluated;
     }
 
