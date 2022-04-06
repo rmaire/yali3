@@ -49,7 +49,7 @@ public class Template implements ProcedureProvider {
 
             java.util.List<Node> results = new ArrayList<>();
 
-            String command = "(list ";
+//            String command = "(list ";
 
             for (int i = 0; i < values.getChildren().size(); i++) {
                 Node val = values.getChildren().get(i);
@@ -61,30 +61,23 @@ public class Template implements ProcedureProvider {
                         realizedValues.add(n);
                     }
                 }
-//                List l = new List(realizedValues);
-//                String runCommand = l.toString().substring(1, l.toString().length() - 1);
-//                Node result = it.runBounded(it.read(runCommand));
-//                if (result.type().equals(NodeType.LIST)) {
-//                    results.add(result);
-//                } else {
-//                    results.add(Node.symbol(result.toString()));
-//                }
+                
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                command += "(" + runCommand + ") ";
+                Node result = it.runBounded(it.read(runCommand));
+                if (result.type().equals(NodeType.LIST)) {
+                    results.add(result);
+                } else {
+                    results.add(Node.symbol(result.toString()));
+                }
             }
 
-            command += ")";
-//            it.stack().schedule(it.read(command));
-            it.run(it.read(command));
-            return Node.none();
+            return Node.list(results);
 
         } else if (args.get(1).type().equals(NodeType.QUOTE)) {
             String values = args.get(1).toQuotedWord().getQuote();
 
             String results = "";
-
-            String command = "(word ";
 
             for (int i = 0; i < values.length(); i++) {
                 Character val = values.charAt(i);
@@ -96,18 +89,12 @@ public class Template implements ProcedureProvider {
                         realizedValues.add(n);
                     }
                 }
-//                List l = new List(realizedValues);
-//                String runCommand = l.toString().substring(1, l.toString().length() - 1);
-//                Node result = it.runBounded(it.read(runCommand));
-//                results += result.toString();
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                command += "(" + runCommand + ") ";
+                Node result = it.runBounded(it.read(runCommand));
+                results += result.toString();
             }
-            command += ")";
-//            it.stack().schedule(it.read(command));
-            it.run(it.read(command));
-            return Node.none();
+            return Node.symbol(results);
 
         } else {
             throw new NodeTypeException(args.get(1), args.get(1).type(), NodeType.LIST, NodeType.QUOTE);

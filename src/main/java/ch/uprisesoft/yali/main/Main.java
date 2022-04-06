@@ -94,12 +94,8 @@ public class Main {
 //        Node res = it.run(it.read(sb.toString()));
 //
 //        System.out.println(res);
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("make \"first_programmer [Ada Lovelace]").append("\n");
-        sb.append("print :first_programmer").append("\n");
         
-        it.load(it.read(sb.toString()));
+        it.load(it.read("map [? * ?] [1 2 3]"));
         Node res = it.run();
         System.out.println(res);
         

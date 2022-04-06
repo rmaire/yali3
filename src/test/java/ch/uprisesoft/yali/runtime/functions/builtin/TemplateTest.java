@@ -80,7 +80,6 @@ public class TemplateTest {
         outputs = new ArrayList<>();
     }
     
-    @Disabled
     @Test
     public void testMap() {
         Node result = it.run(it.read("map [? * ?] [1 2 3]"));
@@ -94,7 +93,6 @@ public class TemplateTest {
         assertThat(result.getChildren().get(2).toSymbolWord().getSymbol(), is("9"));
     }
     
-    @Disabled
     @Test
     public void testMap2() {
         Node result = it.run(it.read("map [equal? (mod ? 2) 1] [1 2 3 4]"));
@@ -110,7 +108,6 @@ public class TemplateTest {
         assertThat(result.getChildren().get(3).toSymbolWord().getSymbol(), is("false"));
     }
     
-    @Disabled
      @Test
     public void testMapQuote() {
         Node result = it.run(it.read("map [uppercase ?] \"abcd"));

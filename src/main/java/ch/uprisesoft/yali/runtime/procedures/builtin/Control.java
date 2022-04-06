@@ -203,11 +203,16 @@ public class Control implements ProcedureProvider {
     private Node run(Scope scope, ch.uprisesoft.yali.ast.node.List args) {
 
         Node result = Node.none();
+        
         result = it.runBounded(
                 it.read(
                         args
                 )
         );
+        return result;
+    }
+    
+    private Node runFinish(Scope scope, Node result) {
         return result;
     }
 
