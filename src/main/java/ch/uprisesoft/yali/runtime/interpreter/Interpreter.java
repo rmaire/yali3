@@ -48,6 +48,11 @@ public class Interpreter implements OutputObserver {
     private java.util.Stack<Call> stack = new java.util.Stack<>();
     private java.util.List<Call> program = new ArrayList<>();
 
+    // Bounded execution
+    private boolean bounded;
+    private java.util.Stack<Call> saveStack = stack;
+    private java.util.List<Call> saveProgram = program;
+
     private Node lastResult;
 
     public Interpreter() {
@@ -98,17 +103,28 @@ public class Interpreter implements OutputObserver {
     public Node runBounded(Node node) {
 //        tracers.forEach(t -> t.run(node));
 
-        java.util.Stack<Call> saveStack = stack;
-        java.util.List<Call> saveProgram = program;
-        
-        stack = new java.util.Stack<>();
-        program = new java.util.ArrayList<>();
+        bounded = true;
+        saveStack();
 
         Node result = run(node);
 
+        restoreStack();
+        
+        return result;
+    }
+
+    private void saveStack() {
+        saveStack = stack;
+        saveProgram = program;
+
+        stack = new java.util.Stack<>();
+        program = new java.util.ArrayList<>();
+        bounded = false;
+    }
+    
+    private void restoreStack() {
         stack = saveStack;
         program = saveProgram;
-        return result;
     }
 
     public Node resume() {
@@ -160,6 +176,13 @@ public class Interpreter implements OutputObserver {
             // If both program and stack are empty, execution is finished or no
             // program was loaded in the first place
             if (program.isEmpty()) {
+                
+                // TODO: check
+                if(bounded) {
+                    restoreStack();
+                    return true;
+                }
+                
                 return false;
             } else {
                 schedule(program.remove(0));
@@ -174,16 +197,16 @@ public class Interpreter implements OutputObserver {
         if (stack.peek().evaluated()) {
             Call evaluatedCall = unschedule();
             Node res = evaluatedCall.result();
-            if(stack.empty() && !program.isEmpty()) {
+            if (stack.empty() && !program.isEmpty()) {
                 lastResult = res;
                 return true;
-            } else if (stack.empty() && program.isEmpty()){
+            } else if (stack.empty() && program.isEmpty()) {
                 lastResult = res;
                 return false;
-            }  else if (stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()) {
+            } else if (stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()) {
                 lastResult = res;
                 return false;
-            } else if (stack.peek().hasMoreParameters()){
+            } else if (stack.peek().hasMoreParameters()) {
                 stack.peek().arg(res);
                 return true;
             } else {
@@ -210,7 +233,6 @@ public class Interpreter implements OutputObserver {
         }
 
         // Procedure evaluation
-
         Call call = stack.peek();
 
         // Prepare env
