@@ -129,7 +129,7 @@ public class Template implements ProcedureProvider {
 
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.run(it.read(runCommand));
+                Node result = it.runBounded(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);
@@ -159,7 +159,7 @@ public class Template implements ProcedureProvider {
 
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.run(it.read(runCommand));
+                Node result = it.runBounded(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);
@@ -200,7 +200,7 @@ public class Template implements ProcedureProvider {
                 }
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.run(it.read(runCommand));
+                Node result = it.runBounded(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);
@@ -226,7 +226,7 @@ public class Template implements ProcedureProvider {
                 }
                 List l = new List(realizedValues);
                 String runCommand = l.toString().substring(1, l.toString().length() - 1);
-                Node result = it.run(it.read(runCommand));
+                Node result = it.runBounded(it.read(runCommand));
 
                 if (!result.type().equals(NodeType.BOOLEAN)) {
                     throw new NodeTypeException(template, result.type(), NodeType.BOOLEAN);

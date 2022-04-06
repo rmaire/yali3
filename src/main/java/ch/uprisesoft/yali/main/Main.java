@@ -95,7 +95,7 @@ public class Main {
 //
 //        System.out.println(res);
         
-        it.load(it.read("map [? * ?] [1 2 3]"));
+        it.load(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
         Node res = it.run();
         System.out.println(res);
         

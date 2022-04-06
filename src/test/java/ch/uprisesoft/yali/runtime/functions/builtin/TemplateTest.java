@@ -116,7 +116,6 @@ public class TemplateTest {
         assertThat(result.toSymbolWord().getSymbol(), is("ABCD"));
     }
     
-    @Disabled
     @Test
     public void testFilter() {
         Node result = it.run(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
@@ -128,7 +127,6 @@ public class TemplateTest {
         assertThat(result.getChildren().get(1).toSymbolWord().getSymbol(), is("3")); 
     }
     
-    @Disabled
     @Test
     public void testFilterQuote() {
         Node result = it.run(it.read("filter [notequal? ? \"b] \"abcd"));
@@ -137,7 +135,6 @@ public class TemplateTest {
         assertThat(result.toQuotedWord().getQuote(), is("acd"));
     }
     
-    @Disabled
     @Test
     public void testFind() {
         Node result = it.run(it.read("find [equal? ? 2] [1 2 3 4]"));
@@ -145,7 +142,6 @@ public class TemplateTest {
         assertThat(result.toSymbolWord().getSymbol(), is("2"));
     }
     
-    @Disabled
     @Test
     public void testFindWord() {
         Node result = it.run(it.read("find [equal? ? \"b] \"abcd"));
