@@ -91,6 +91,7 @@ public class Call extends Node implements Iterator {
     }
 
     public void evaluated(boolean e) {
+        System.out.println("EVALUATED: " + name);
         this.evaluated = e;
     }
 
@@ -103,6 +104,7 @@ public class Call extends Node implements Iterator {
     }
 
     public void result(Node result, Scope scope) {
+        System.out.println("RESULT: " + name + " -> " + result);
         if(definition.isNative()) {
             definition.getResultCallback().apply(scope, result);
         }

@@ -57,7 +57,7 @@ public class Control implements ProcedureProvider {
 
         Node value = it.env().thing(name);
 
-        it.tracers().forEach(t -> t.thing(name, value, it.env()));
+//        it.tracers().forEach(t -> t.thing(name, value, it.env()));
         return value;
     }
 

@@ -71,12 +71,24 @@ public class Main {
 //        Node res = it.run(it.read(input));
 //
 //String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
-//        String input = "to testit\n"
-//                + "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n"
-//                + "end\n";
-//        List ast = it.read(input).toList();
-//        it.run(it.read("testit\n"));
-//
+
+        String input1 = "to testit\n"
+                + "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n"
+                + "end\n"
+                + "print \"Bye!\n"
+                + "testit\n";
+        
+        String input2 = "to recurse :i\n"
+                + "print :i\n"
+                + "recurse :i + 1\n"
+                + "end\n"
+                + "\n"
+                + "recurse 1\n";
+        
+        Node ast = it.read(input2);
+        it.load(ast);
+        Node res = it.run();
+        
         //        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
 //        it.run(it.read(input));
 //        StringBuilder sb = new StringBuilder();
@@ -99,16 +111,16 @@ public class Main {
 //        Node res = it.run();
 //        System.out.println(res);
 
-        String input = "to recurse :i\n"
-                + "print :i\n"
-                + "recurse :i + 1\n"
-                + "end\n"
-                + "\n"
-                + "recurse 1\n";
-
-        it.load(it.read(input));
-        Node res = it.run();
-        System.out.println(res);
+//        String input = "to recurse :i\n"
+//                + "print :i\n"
+//                + "recurse :i + 1\n"
+//                + "end\n"
+//                + "\n"
+//                + "recurse 1\n";
+//
+//        it.load(it.read(input));
+//        Node res = it.run();
+//        System.out.println(res);
         
 //        StringBuilder sb = new StringBuilder();
 //        sb.append("to pausetest").append("\n");

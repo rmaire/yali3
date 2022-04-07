@@ -33,21 +33,23 @@ public class Environment {
     }
 
     public boolean push(Scope scope) {
+        scopes.add(scope);
+        System.out.println("ACTUAL: " + (scopes.size()- 1) + " -> " + scopes.get(scopes.size()- 1).getScopeName());
         for(int i = scopes.size() -2; i >= 0; i--) {
                 Scope currentScope = scopes.get(i);
                 if(scope.getScopeName().equals(currentScope.getScopeName())) {
-                    for(int j = scopes.size()-1; j>=i; j--) {
-                        scopes.remove(j);
-                        scopes.add(currentScope);
-                    }
-//                    System.out.println("RECURSION: " + (scopes.size()- i) + " -> " + scopes.get(i).getScopeName());
-                    return true;
+//                    for(int j = scopes.size()-1; j>=i; j--) {
+//                        scopes.remove(j);
+//                        scopes.add(currentScope);
+//                    }
+                    System.out.println("RECURSION: " + i + " -> " + scopes.get(i).getScopeName());
+//                    return true;
                 } else {
-//                     System.out.println("NOT RECURSION: " + currentNode.type());
+                     System.out.println("NOT RECURSION: " +  i + " -> " + scopes.get(i).getScopeName());
                 }
             }
         
-        scopes.add(scope);
+//        scopes.add(scope);
         return false;
     }
 
