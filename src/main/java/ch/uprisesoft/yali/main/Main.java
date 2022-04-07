@@ -95,7 +95,18 @@ public class Main {
 //
 //        System.out.println(res);
         
-        it.load(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
+//        it.load(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
+//        Node res = it.run();
+//        System.out.println(res);
+
+        String input = "to recurse :i\n"
+                + "print :i\n"
+                + "recurse :i + 1\n"
+                + "end\n"
+                + "\n"
+                + "recurse 1\n";
+
+        it.load(it.read(input));
         Node res = it.run();
         System.out.println(res);
         

@@ -187,9 +187,12 @@ public class Interpreter implements OutputObserver {
     }
 
     public boolean tick() {
-//        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size());
+        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size() + ", Env size: " + env.size());
 
-        // Global Program state
+        /*
+        Global Program state
+        */
+        
         if (paused) {
             return false;
         }
@@ -212,7 +215,10 @@ public class Interpreter implements OutputObserver {
             }
         }
 
-        // Result handling
+        /*
+        Result handling
+        */
+        
         // Check for finished procedures. If stack is 1 and program empty, this
         // is the result. Else, deschedule the call and set the result to the
         // previous call. Has to be done before argument handling.
@@ -233,10 +239,14 @@ public class Interpreter implements OutputObserver {
                 return true;
             } else {
                 stack.peek().result(res, env.peek());
+                return true;
             }
         }
 
-        // Arguments evaluation
+        /*
+        Arguments evaluation
+        */
+        
         // Arguments are evaluated first. If a call does not have it's argument
         // evaluated, schedule the next argument to be evaluated
         if (stack.peek().hasMoreParameters()) {
@@ -254,7 +264,10 @@ public class Interpreter implements OutputObserver {
             }
         }
 
-        // Procedure evaluation
+        /*
+        Procedure evaluation
+        */
+        
         Call call = stack.peek();
 
         // Prepare env

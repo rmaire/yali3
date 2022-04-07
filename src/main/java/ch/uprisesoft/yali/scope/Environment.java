@@ -138,4 +138,8 @@ public class Environment {
         }
         return sb.toString();
     }
+
+    public Integer size() {
+        return scopes.size();
+    }
 }
