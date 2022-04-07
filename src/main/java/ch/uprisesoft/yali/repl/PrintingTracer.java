@@ -7,8 +7,10 @@ package ch.uprisesoft.yali.repl;
 
 import ch.uprisesoft.yali.ast.node.Call;
 import ch.uprisesoft.yali.ast.node.Node;
+import ch.uprisesoft.yali.runtime.interpreter.Interpreter;
 import ch.uprisesoft.yali.runtime.interpreter.Tracer;
 import ch.uprisesoft.yali.scope.Environment;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,6 +18,12 @@ import java.util.List;
  * @author rma
  */
 public class PrintingTracer implements Tracer {
+    
+    private final Interpreter it;
+
+    public PrintingTracer(Interpreter it) {
+        this.it = it;
+    }
 
     @Override
     public void parse(String source) {
@@ -30,41 +38,41 @@ public class PrintingTracer implements Tracer {
 
     @Override
     public void callPrimitive(String name, List<Node> args, Environment env) {
-        System.out.println("Calling primitive Procedure " + name + ": " + args.toString());
+        System.out.println(lpad() + "Calling primitive Procedure " + name + ": " + args.toString());
 //        System.out.println("Trace:");
 //        System.out.println(env.trace());
     }
 
     @Override
     public void call(String name, List<Node> args, Environment env) {
-        System.out.println("Calling Procedure " + name + ": " + args.toString());
+        System.out.println(lpad() + "Calling Procedure " + name + ": " + args.toString());
 //        System.out.println("Trace:");
 //        System.out.println(env.trace());
     }
 
     @Override
     public void make(String name, Node val, Environment env) {
-        System.out.println("Defining Variable " + name + " in scope " + env.peek().getScopeName() + " with value " + val.toString());
+        System.out.println(lpad() + "Defining Variable " + name + " in scope " + env.peek().getScopeName() + " with value " + val.toString());
     }
 
     @Override
     public void thing(String name, Node val, Environment env) {
-        System.out.println("Resolving Variable " + name + " in scope " + env.peek().getScopeName() + " with value " + val.toString());
+        System.out.println(lpad() + "Resolving Variable " + name + " in scope " + env.peek().getScopeName() + " with value " + val.toString());
     }
 
     @Override
     public void local(String name, Environment env) {
-        System.out.println("Local Variable " + name + " in scope " + env.peek().getScopeName());
+        System.out.println(lpad() + "Local Variable " + name + " in scope " + env.peek().getScopeName());
     }
 
     @Override
     public void run(Node val) {
-        System.out.println("Run: " + val.toString());
+        System.out.println(lpad() + "Run: " + val.toString());
     }
 
     @Override
     public void tick(Node val) {
-        System.out.println("tick: " + val.toString());
+        System.out.println(lpad() + "tick: " + val.toString());
     }
 
     @Override
@@ -74,46 +82,51 @@ public class PrintingTracer implements Tracer {
 
     @Override
     public void pause(Node val) {
-        System.out.println("Paused, current call: " + val.toString());
+        System.out.println(lpad() + "Paused, current call: " + val.toString());
     }
 
     @Override
     public void resume(Node val) {
         if (val != null) {
-            System.out.println("Resumed, current call: " + val.toString());
+            System.out.println(lpad() + "Resumed, current call: " + val.toString());
         } else {
-            System.out.println("Resumed");
+            System.out.println(lpad() + "Resumed");
         }
     }
 
     @Override
     public void scope(String name, Environment env) {
-        System.out.println("Open environment " + name);
+        System.out.println(lpad() + "Open environment " + name);
     }
 
     @Override
     public void unscope(String name, Environment env) {
-        System.out.println("Close environment " + name);
+        System.out.println(lpad() + "Close environment " + name);
     }
 
     @Override
     public void arg(String name, Node val, Environment env) {
-        System.out.println("Evaluating argument for Call " + name + " -> " + val);
+        System.out.println(lpad() + "Evaluating argument for Call " + name + " -> " + val);
     }
 
     @Override
     public void schedule(String name, Call call, Environment env) {
-        System.out.println("Scheduling " + name + ": " + call);
+        System.out.println(lpad() + "Scheduling " + name + ": " + call);
     }
 
     @Override
     public void unschedule(String name, Call call, Environment env) {
-        System.out.println("Unscheduling " + name + ": " + call);
+        System.out.println(lpad() + "Unscheduling " + name + ": " + call);
     }
 
     @Override
     public void load(Node val) {
-        System.out.println("Loading " + val);
+        System.out.println(lpad() + "Loading " + val);
+    }
+    
+    private String lpad(){
+        String lpad = String.join("", Collections.nCopies(it.env().size(), ">")) + " ";
+        return lpad;        
     }
 
 }
