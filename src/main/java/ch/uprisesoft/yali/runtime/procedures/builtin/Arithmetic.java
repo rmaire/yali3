@@ -177,13 +177,13 @@ public class Arithmetic implements ProcedureProvider {
     public Interpreter registerProcedures(Interpreter it) {
         Arithmetic builtins = new Arithmetic();
 
-        it.env().define(new Procedure("add", (scope, val) -> builtins.add(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
-        it.env().define(new Procedure("mul", (scope, val) -> builtins.mul(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
-        it.env().define(new Procedure("sub", (scope, val) -> builtins.sub(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
-        it.env().define(new Procedure("div", (scope, val) -> builtins.div(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
-        it.env().define(new Procedure("mod", (scope, val) -> builtins.mod(scope, val), (scope, val) -> Node.none(), "fst", "snd"));
-        it.env().define(new Procedure("integer", (scope, val) -> builtins.integer(scope, val), (scope, val) -> Node.none(), "val"));
-        it.env().define(new Procedure("round", (scope, val) -> builtins.round(scope, val), (scope, val) -> Node.none(), "val"));
+        it.env().define(new Procedure("add", (scope, val) -> builtins.add(scope, val), (scope, val) -> val, "fst", "snd"));
+        it.env().define(new Procedure("mul", (scope, val) -> builtins.mul(scope, val), (scope, val) -> val, "fst", "snd"));
+        it.env().define(new Procedure("sub", (scope, val) -> builtins.sub(scope, val), (scope, val) -> val, "fst", "snd"));
+        it.env().define(new Procedure("div", (scope, val) -> builtins.div(scope, val), (scope, val) -> val, "fst", "snd"));
+        it.env().define(new Procedure("mod", (scope, val) -> builtins.mod(scope, val), (scope, val) -> val, "fst", "snd"));
+        it.env().define(new Procedure("integer", (scope, val) -> builtins.integer(scope, val), (scope, val) -> val, "val"));
+        it.env().define(new Procedure("round", (scope, val) -> builtins.round(scope, val), (scope, val) -> val, "val"));
 
         return it;
     }

@@ -233,18 +233,18 @@ public class Control implements ProcedureProvider {
     public Interpreter registerProcedures(Interpreter interpreter) {
         this.it = interpreter;
 
-        it.env().define(new Procedure("alias", (scope, val) -> this.alias(scope, val), (scope, val) -> Node.none(), "original", "alias"));
-        it.env().define(new Procedure("thing", (scope, val) -> this.thing(scope, val), (scope, val) -> Node.none(), "name").macro());
-        it.env().define(new Procedure("make", (scope, val) -> this.make(scope, val), (scope, val) -> Node.none(), "name", "value").macro());
-        it.env().define(new Procedure("local", (scope, val) -> this.local(scope, val), (scope, val) -> Node.none(), "name").macro());
-        it.env().define(new Procedure("localmake", (scope, val) -> this.localmake(scope, val), (scope, val) -> Node.none(), "name", "value").macro());
-        it.env().define(new Procedure("repeat", (scope, val) -> this.repeat(scope, val), (scope, val) -> Node.none(), "control", "block").macro());
-        it.env().define(new Procedure("run", (scope, val) -> this.run(scope, val), (scope, val) -> Node.none(), "block").macro());
-        it.env().define(new Procedure("output", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none(), "block"));
-        it.env().define(new Procedure("stop", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none()));
-        it.env().define(new Procedure("ifelse", (scope, val) -> this.ifelseexpr(scope, val), (scope, val) -> Node.none(), "condition", "iftrue", "iffalse").macro());
-        it.env().define(new Procedure("if", (scope, val) -> this.ifexpr(scope, val), (scope, val) -> Node.none(), "condition", "iftrue").macro());
-        it.env().define(new Procedure("pause", (scope, val) -> this.pause(scope, val), (scope, val) -> Node.none()).macro());
+        it.env().define(new Procedure("alias", (scope, val) -> this.alias(scope, val), (scope, val) -> val, "original", "alias"));
+        it.env().define(new Procedure("thing", (scope, val) -> this.thing(scope, val), (scope, val) -> val, "name").macro());
+        it.env().define(new Procedure("make", (scope, val) -> this.make(scope, val), (scope, val) -> val, "name", "value").macro());
+        it.env().define(new Procedure("local", (scope, val) -> this.local(scope, val), (scope, val) -> val, "name").macro());
+        it.env().define(new Procedure("localmake", (scope, val) -> this.localmake(scope, val), (scope, val) -> val, "name", "value").macro());
+        it.env().define(new Procedure("repeat", (scope, val) -> this.repeat(scope, val), (scope, val) -> val, "control", "block").macro());
+        it.env().define(new Procedure("run", (scope, val) -> this.run(scope, val), (scope, val) -> val, "block").macro());
+        it.env().define(new Procedure("output", (scope, val) -> this.output(scope, val), (scope, val) -> val, "block"));
+        it.env().define(new Procedure("stop", (scope, val) -> this.output(scope, val), (scope, val) -> val));
+        it.env().define(new Procedure("ifelse", (scope, val) -> this.ifelseexpr(scope, val), (scope, val) -> val, "condition", "iftrue", "iffalse").macro());
+        it.env().define(new Procedure("if", (scope, val) -> this.ifexpr(scope, val), (scope, val) -> val, "condition", "iftrue").macro());
+        it.env().define(new Procedure("pause", (scope, val) -> this.pause(scope, val), (scope, val) -> val).macro());
 
         return it;
     }
