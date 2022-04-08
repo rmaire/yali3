@@ -125,9 +125,9 @@ public class IO implements ProcedureProvider, OutputSubject, InputReceiver {
         
         it.env().define(new Procedure("readword", (scope, val) -> this.readword(scope, val), (scope, val) -> val));
         it.env().define(new Procedure("readlist", (scope, val) -> this.readlist(scope, val), (scope, val) -> val));
-        it.env().define(new Procedure("show", (scope, val) -> this.show(scope, val), (scope, val) -> val, "output"));
-        it.env().define(new Procedure("type", (scope, val) -> this.type(scope, val), (scope, val) -> val, "output"));
-        it.env().define(new Procedure("print", (scope, val) -> this.print(scope, val), (scope, val) -> val, "output"));
+        it.env().define(new Procedure("show", (scope, val) -> this.show(scope, val), (scope, val) -> val, "__output__"));
+        it.env().define(new Procedure("type", (scope, val) -> this.type(scope, val), (scope, val) -> val, "__output__"));
+        it.env().define(new Procedure("print", (scope, val) -> this.print(scope, val), (scope, val) -> val, "__output__"));
 
         return it;
     }
