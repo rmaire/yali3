@@ -98,7 +98,6 @@ public class Environment {
     }
 
     public Boolean thingable(String name) {
-
         for (int i = scopes.size() - 1; i >= 0; i--) {
             if (scopes.get(i).defined(name)) {
                 return true;

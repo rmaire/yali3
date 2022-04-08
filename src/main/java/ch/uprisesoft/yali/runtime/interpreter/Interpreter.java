@@ -223,22 +223,19 @@ public class Interpreter implements OutputObserver {
         // is the result. Else, deschedule the call and set the result to the
         // previous call. Has to be done before argument handling.
         if (stack.peek().evaluated()) {
-            Call evaluatedCall = unschedule();
-            Node res = evaluatedCall.result();
+            System.out.println("FINISHED EVALUATING " + stack.peek().getName() + ": " + stack.peek().args() + " -> " + stack.peek().result());
+            unschedule();
             if (stack.empty() && !program.isEmpty()) {
-                lastResult = res;
                 return true;
             } else if (stack.empty() && program.isEmpty()) {
-                lastResult = res;
                 return false;
             } else if (stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()) {
-                lastResult = res;
                 return false;
             } else if (stack.peek().hasMoreParameters()) {
-                stack.peek().arg(res);
+                stack.peek().arg(lastResult);
                 return true;
             } else {
-                stack.peek().result(res, env.peek());
+//                stack.peek().result(res, env.peek());
                 return true;
             }
         }
