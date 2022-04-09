@@ -78,7 +78,8 @@ public class Call extends Node implements Iterator {
     public void reset() {
         callPos = 0;
         args.clear();
-        result = null;
+        evaluated = false;
+//        result = null;
     }
 
     /**
@@ -91,11 +92,16 @@ public class Call extends Node implements Iterator {
     }
 
     public void evaluated(boolean e) {
-        System.out.println("EVALUATED: " + name);
+        if(name.equals("print")) {
+            System.out.println("PRINT EVALUATED!");
+        }
         this.evaluated = e;
     }
 
     public boolean evaluated() {
+        if(name.equals("print")) {
+            System.out.println("PRINT EVALUATED?");
+        }
         return evaluated;
     }
 
@@ -104,7 +110,6 @@ public class Call extends Node implements Iterator {
     }
 
     public void result(Node result, Scope scope) {
-        System.out.println("RESULT: " + name + " -> " + result);
         if(definition.isNative()) {
             result = definition.getResultCallback().apply(scope, result);
         }

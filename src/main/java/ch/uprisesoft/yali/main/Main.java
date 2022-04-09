@@ -76,6 +76,7 @@ public class Main {
                 + "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n"
                 + "end\n"
                 + "print \"Bye!\n"
+                + "print \"Well?\n"
                 + "testit\n";
         
         String input2 = "to recurse :i\n"

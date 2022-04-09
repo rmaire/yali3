@@ -223,7 +223,6 @@ public class Interpreter implements OutputObserver {
         // is the result. Else, deschedule the call and set the result to the
         // previous call. Has to be done before argument handling.
         if (stack.peek().evaluated()) {
-            System.out.println("FINISHED EVALUATING " + stack.peek().getName() + ": " + stack.peek().args() + " -> " + stack.peek().result());
             unschedule();
             if (stack.empty() && !program.isEmpty()) {
                 return true;
@@ -235,7 +234,6 @@ public class Interpreter implements OutputObserver {
                 stack.peek().arg(lastResult);
                 return true;
             } else {
-//                stack.peek().result(res, env.peek());
                 return true;
             }
         }
@@ -294,7 +292,12 @@ public class Interpreter implements OutputObserver {
     }
 
     private Call unschedule() {
+        if(stack.peek().getName().equals("print")) {
+            System.out.println("UNSCHEDULEPRINT");
+        }
+        
         Call call = stack.pop();
+        
         if (!call.definition().isMacro()) {
             tracers.forEach(t -> t.unscope(env.peek().getScopeName(), env));
             env.pop();
@@ -307,11 +310,16 @@ public class Interpreter implements OutputObserver {
     private void schedule(Call call) {
         tracers.forEach(t -> t.schedule(call.getName(), call, env));
 
+        if(call.getName().equals("print")) {
+            System.out.println("SCHEDULEPRINT");
+        }
+        
         if (!env.defined(call.getName())) {
             throw new FunctionNotFoundException(call.getName());
         }
 
         call.definition(env.procedure(call.getName()));
+        call.reset();
         stack.push(call);
         if (!call.definition().isMacro()) {
             env.push(new Scope(call.getName()));
