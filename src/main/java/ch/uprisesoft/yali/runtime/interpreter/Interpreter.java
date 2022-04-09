@@ -100,25 +100,37 @@ public class Interpreter implements OutputObserver {
 
         return lastResult;
     }
+//
+//    public void load(Call call) {
+//        tracers.forEach(t -> t.load(call));
+//        program.add(call);
+//    }
 
-    public void load(Call call) {
-        tracers.forEach(t -> t.load(call));
-        program.add(call);
-    }
-    
     public void load(Node node) {
         tracers.forEach(t -> t.load(node));
-        
-        for (Node n : node.getChildren()) {
-            Call call = n.toProcedureCall();
-            load(call);
+
+        switch (node.type()) {
+            case LIST:
+                for (Node n : node.getChildren()) {
+                    Call call = n.toProcedureCall();
+                    tracers.forEach(t -> t.load(node));
+                    program.add(call);
+                }   break;
+            case PROCCALL:
+                stack.push(node.toProcedureCall());
+                break;
+            case REFERENCE:
+                lastResult = env.thing(node.toReferenceWord().getReference());
+                break;
+            default:
+                lastResult = node;
+                break;
         }
     }
 
     public Node runBounded(Node node) {
 //        tracers.forEach(t -> t.run(node));
 
-        bounded = true;
         saveStack();
 
         for (Node n : node.getChildren()) {
@@ -137,6 +149,7 @@ public class Interpreter implements OutputObserver {
     }
 
     private void saveStack() {
+        bounded = true;
         saveStack = stack;
         saveProgram = program;
 
@@ -191,8 +204,7 @@ public class Interpreter implements OutputObserver {
 
         /*
         Global Program state
-        */
-        
+         */
         if (paused) {
             return false;
         }
@@ -217,8 +229,7 @@ public class Interpreter implements OutputObserver {
 
         /*
         Result handling
-        */
-        
+         */
         // Check for finished procedures. If stack is 1 and program empty, this
         // is the result. Else, deschedule the call and set the result to the
         // previous call. Has to be done before argument handling.
@@ -240,8 +251,7 @@ public class Interpreter implements OutputObserver {
 
         /*
         Arguments evaluation
-        */
-        
+         */
         // Arguments are evaluated first. If a call does not have it's argument
         // evaluated, schedule the next argument to be evaluated
         if (stack.peek().hasMoreParameters()) {
@@ -261,8 +271,7 @@ public class Interpreter implements OutputObserver {
 
         /*
         Procedure evaluation
-        */
-        
+         */
         Call call = stack.peek();
 
         // Prepare env
@@ -293,7 +302,7 @@ public class Interpreter implements OutputObserver {
 
     private Call unschedule() {
         Call call = stack.pop();
-        
+
         if (!call.definition().isMacro()) {
             tracers.forEach(t -> t.unscope(env.peek().getScopeName(), env));
             env.pop();
@@ -305,7 +314,7 @@ public class Interpreter implements OutputObserver {
 
     private void schedule(Call call) {
         tracers.forEach(t -> t.schedule(call.getName(), call, env));
-        
+
         if (!env.defined(call.getName())) {
             throw new FunctionNotFoundException(call.getName());
         }

@@ -93,7 +93,7 @@ public class Main {
                 + "\n"
                 + "recurse 8000\n";
         
-        Node ast = it.read(input2);
+        Node ast = it.read(input1);
         it.load(ast);
         Node res = it.run();
         
