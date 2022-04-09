@@ -93,9 +93,12 @@ public class Main {
                 + "\n"
                 + "recurse 8000\n";
         
-        Node ast = it.read(input1);
+        String input4 = "run [3 + 4]\n";
+        
+        Node ast = it.read(input4);
         it.load(ast);
         Node res = it.run();
+        System.out.println(res);
         
         //        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
 //        it.run(it.read(input));
