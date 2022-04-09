@@ -93,7 +93,7 @@ public class Main {
                 + "\n"
                 + "recurse 8000\n";
         
-        String input4 = "run [3 + 4]\n";
+        String input4 = "run [make \"test 3 + 4 print :test]\n";
         
         Node ast = it.read(input4);
         it.load(ast);
