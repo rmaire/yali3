@@ -92,16 +92,10 @@ public class Call extends Node implements Iterator {
     }
 
     public void evaluated(boolean e) {
-        if(name.equals("print")) {
-            System.out.println("PRINT EVALUATED!");
-        }
         this.evaluated = e;
     }
 
     public boolean evaluated() {
-        if(name.equals("print")) {
-            System.out.println("PRINT EVALUATED?");
-        }
         return evaluated;
     }
 

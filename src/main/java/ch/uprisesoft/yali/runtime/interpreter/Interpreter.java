@@ -187,7 +187,7 @@ public class Interpreter implements OutputObserver {
     }
 
     public boolean tick() {
-        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size() + ", Env size: " + env.size());
+//        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size() + ", Env size: " + env.size());
 
         /*
         Global Program state
@@ -292,10 +292,6 @@ public class Interpreter implements OutputObserver {
     }
 
     private Call unschedule() {
-        if(stack.peek().getName().equals("print")) {
-            System.out.println("UNSCHEDULEPRINT");
-        }
-        
         Call call = stack.pop();
         
         if (!call.definition().isMacro()) {
@@ -309,10 +305,6 @@ public class Interpreter implements OutputObserver {
 
     private void schedule(Call call) {
         tracers.forEach(t -> t.schedule(call.getName(), call, env));
-
-        if(call.getName().equals("print")) {
-            System.out.println("SCHEDULEPRINT");
-        }
         
         if (!env.defined(call.getName())) {
             throw new FunctionNotFoundException(call.getName());
