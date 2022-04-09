@@ -130,7 +130,6 @@ public class Interpreter implements OutputObserver {
 
     public Node runBounded(Node node) {
 //        tracers.forEach(t -> t.run(node));
-
         saveStack();
 
         for (Node n : node.getChildren()) {
@@ -161,6 +160,7 @@ public class Interpreter implements OutputObserver {
     private void restoreStack() {
         stack = saveStack;
         program = saveProgram;
+        bounded = false;
     }
 
     public Node resume() {
