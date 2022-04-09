@@ -204,6 +204,8 @@ public class Control implements ProcedureProvider {
 
         Node result = Node.none();
         
+        System.out.println("START RUN: " + args);
+        
         result = it.runBounded(
                 it.read(
                         args
