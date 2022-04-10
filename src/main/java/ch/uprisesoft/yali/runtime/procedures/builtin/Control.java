@@ -186,12 +186,6 @@ public class Control implements ProcedureProvider {
             }
 
             if (condition.toBooleanWord().getBoolean()) {
-                result = run(scope, iftrue.toList());
-            } else {
-                result = run(scope, iffalse.toList());
-            }
-
-            if (condition.toBooleanWord().getBoolean()) {
                 Node ast = it.read(iftrue.toList());
                 ifelseexprsToRun.addAll(ast.getChildren());
             } else {
@@ -280,18 +274,6 @@ public class Control implements ProcedureProvider {
         Call next = proceduresToRun.remove(0).toProcedureCall();
         it.schedule(next);
 
-        return result;
-    }
-
-    private Node run(Scope scope, ch.uprisesoft.yali.ast.node.List args) {
-
-        Node result = Node.none();
-
-        result = it.runBounded(
-                it.read(
-                        args
-                )
-        );
         return result;
     }
 
