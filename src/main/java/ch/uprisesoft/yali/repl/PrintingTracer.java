@@ -129,4 +129,9 @@ public class PrintingTracer implements Tracer {
         return lpad;        
     }
 
+    @Override
+    public void returnTick(Node val, String pos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

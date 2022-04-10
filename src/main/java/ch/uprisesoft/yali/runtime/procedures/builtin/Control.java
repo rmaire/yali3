@@ -15,6 +15,7 @@
  */
 package ch.uprisesoft.yali.runtime.procedures.builtin;
 
+import ch.uprisesoft.yali.ast.node.Call;
 import ch.uprisesoft.yali.ast.node.Procedure;
 import ch.uprisesoft.yali.ast.node.Node;
 import ch.uprisesoft.yali.exception.NodeTypeException;
@@ -23,6 +24,7 @@ import ch.uprisesoft.yali.scope.Scope;
 import ch.uprisesoft.yali.runtime.interpreter.Interpreter;
 import ch.uprisesoft.yali.runtime.procedures.ProcedureProvider;
 import ch.uprisesoft.yali.scope.VariableNotFoundException;
+import java.util.ArrayList;
 
 /**
  *
@@ -193,10 +195,23 @@ public class Control implements ProcedureProvider {
         return result;
     }
 
+    private java.util.List<Node> proceduresToRun;
     public Node run(Scope scope, java.util.List<Node> args) {
 
         Node result = Node.none();
-        result = run(scope, args.get(0).toList());
+        
+        if(proceduresToRun == null) {
+            System.out.println("START RUN: " + args.get(0).toList());
+            proceduresToRun = new ArrayList<>();
+            Node ast = it.read(args.get(0).toList());
+            proceduresToRun.addAll(ast.getChildren());
+        }
+        
+        Call next = proceduresToRun.remove(0).toProcedureCall();
+        System.out.println("NEXT: " + next);
+        it.schedule(next);
+        
+//        result = run(scope, args.get(0).toList());
         return result;
     }
 
@@ -214,9 +229,17 @@ public class Control implements ProcedureProvider {
         return result;
     }
     
-    private Node runFinish(Scope scope, Node result) {
-        System.out.println("FINISHED RUN: " + result);
-        return result;
+    private Node runFinished(Scope scope, Node result) {
+        if(proceduresToRun.isEmpty()) {
+            System.out.println("FINISHED");
+            proceduresToRun = null;
+            return Node.bool(false);
+        } else {
+            System.out.println("NOT FINISHED");
+            return Node.bool(true);
+        }
+//        System.out.println("FINISHED RUN: " + result);
+//        return result;
     }
 
     public Node output(Scope scope, java.util.List<Node> args) {
@@ -242,7 +265,7 @@ public class Control implements ProcedureProvider {
         it.env().define(new Procedure("local", (scope, val) -> this.local(scope, val), (scope, val) -> Node.none(), "__name__").macro());
         it.env().define(new Procedure("localmake", (scope, val) -> this.localmake(scope, val), (scope, val) -> Node.none(), "__name__", "__value__").macro());
         it.env().define(new Procedure("repeat", (scope, val) -> this.repeat(scope, val), (scope, val) -> Node.none(), "__control__", "__block__").macro());
-        it.env().define(new Procedure("run", (scope, val) -> this.run(scope, val), (scope, val) -> this.runFinish(scope, val), "__block__").macro());
+        it.env().define(new Procedure("run", (scope, val) -> this.run(scope, val), (scope, val) -> this.runFinished(scope, val), "__block__").macro());
         it.env().define(new Procedure("output", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none(), "__block__"));
         it.env().define(new Procedure("stop", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none()));
         it.env().define(new Procedure("ifelse", (scope, val) -> this.ifelseexpr(scope, val), (scope, val) -> Node.none(), "__condition__", "__iftrue__", "__iffalse__").macro());

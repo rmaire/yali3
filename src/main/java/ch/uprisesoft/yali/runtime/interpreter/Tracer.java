@@ -30,6 +30,7 @@ public interface Tracer {
     public void run(Node val);
     public void load(Node val);
     public void tick(Node val);
+    public void returnTick(Node val, String pos);
     public void apply(Node val);
     public void pause(Node val);
     public void resume(Node val);
