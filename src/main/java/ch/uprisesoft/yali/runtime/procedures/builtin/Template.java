@@ -50,8 +50,6 @@ public class Template implements ProcedureProvider {
 
             java.util.List<Node> results = new ArrayList<>();
 
-//            String command = "(list ";
-
             for (int i = 0; i < values.getChildren().size(); i++) {
                 Node val = values.getChildren().get(i);
                 java.util.List<Node> realizedValues = new ArrayList<>();
