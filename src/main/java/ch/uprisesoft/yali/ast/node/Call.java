@@ -104,9 +104,9 @@ public class Call extends Node implements Iterator {
     }
 
     public void result(Node result, Scope scope) {
-        if(definition.isNative()) {
-            result = definition.getResultCallback().apply(scope, result);
-        }
+//        if(definition.isNative()) {
+//            result = definition.getResultCallback().apply(scope, result);
+//        }
         this.result = result;
     }
 

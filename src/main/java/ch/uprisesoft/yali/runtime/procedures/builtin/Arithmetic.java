@@ -177,13 +177,13 @@ public class Arithmetic implements ProcedureProvider {
     public Interpreter registerProcedures(Interpreter it) {
         Arithmetic builtins = new Arithmetic();
 
-        it.env().define(new Procedure("add", (scope, val) -> builtins.add(scope, val), (scope, val) -> val, "__fst__", "__snd__"));
-        it.env().define(new Procedure("mul", (scope, val) -> builtins.mul(scope, val), (scope, val) -> val, "__fst__", "__snd__"));
-        it.env().define(new Procedure("sub", (scope, val) -> builtins.sub(scope, val), (scope, val) -> val, "__fst__", "__snd__"));
-        it.env().define(new Procedure("div", (scope, val) -> builtins.div(scope, val), (scope, val) -> val, "__fst__", "__snd__"));
-        it.env().define(new Procedure("mod", (scope, val) -> builtins.mod(scope, val), (scope, val) -> val, "__fst__", "__snd__"));
-        it.env().define(new Procedure("integer", (scope, val) -> builtins.integer(scope, val), (scope, val) -> val, "__val__"));
-        it.env().define(new Procedure("round", (scope, val) -> builtins.round(scope, val), (scope, val) -> val, "__val__"));
+        it.env().define(new Procedure("add", (scope, val) -> builtins.add(scope, val), (scope, val) -> Node.none(), "__fst__", "__snd__"));
+        it.env().define(new Procedure("mul", (scope, val) -> builtins.mul(scope, val), (scope, val) -> Node.none(), "__fst__", "__snd__"));
+        it.env().define(new Procedure("sub", (scope, val) -> builtins.sub(scope, val), (scope, val) -> Node.none(), "__fst__", "__snd__"));
+        it.env().define(new Procedure("div", (scope, val) -> builtins.div(scope, val), (scope, val) -> Node.none(), "__fst__", "__snd__"));
+        it.env().define(new Procedure("mod", (scope, val) -> builtins.mod(scope, val), (scope, val) -> Node.none(), "__fst__", "__snd__"));
+        it.env().define(new Procedure("integer", (scope, val) -> builtins.integer(scope, val), (scope, val) -> Node.none(), "__val__"));
+        it.env().define(new Procedure("round", (scope, val) -> builtins.round(scope, val), (scope, val) -> Node.none(), "__val__"));
 
         return it;
     }
