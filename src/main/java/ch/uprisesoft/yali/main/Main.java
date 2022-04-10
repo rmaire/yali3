@@ -18,6 +18,7 @@ package ch.uprisesoft.yali.main;
 import ch.uprisesoft.yali.ast.node.List;
 import ch.uprisesoft.yali.ast.node.Node;
 import ch.uprisesoft.yali.repl.PrintingTracer;
+import ch.uprisesoft.yali.repl.Repl2;
 import ch.uprisesoft.yali.runtime.interpreter.Interpreter;
 import ch.uprisesoft.yali.runtime.io.InputGenerator;
 import ch.uprisesoft.yali.runtime.io.OutputObserver;
@@ -58,20 +59,10 @@ public class Main {
         it.loadStdLib(oo, ig);
         MockTurtleManager mtm = new MockTurtleManager();
         mtm.registerProcedures(it);
-//        it.addTracer(new PrintingTracer(it));
-
-//        String input = "to recurse :i\n"
-//                + "print :i\n"
-////                + "if (:i > 0) [recurse :i + 1]\n"
-//                + "recurse :i + 1\n"
-//                + "end\n"
-//                + "\n"
-//                + "recurse 1\n";
-//
-//        Node res = it.run(it.read(input));
-//
-//String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
-
+        
+        Repl2 repl = new Repl2();
+        repl.runPrompt();
+        
         String input1 = "to testit\n"
                 + "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n"
                 + "end\n"
@@ -95,79 +86,9 @@ public class Main {
         
         String input4 = "run [make \"test 3 + 4 print :test print \"BLAAA!]\n";
         
-        Node ast = it.read(input2);
-        it.load(ast);
-        Node res = it.run();
-        System.out.println(res);
-        
-        //        String input = "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n";
-//        it.run(it.read(input));
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("make \"size 81 / 9").append("\n");
-//        sb.append("print :size * 3").append("\n");
-//        sb.append("print :size - 4").append("\n");
-//        Node res = it.run(it.read(sb.toString()));
-
-//        Node result = it.run(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
-
-//        System.out.println(res);
-
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("(sentence 1 2 3 4)").append("\n");
-//        Node res = it.run(it.read(sb.toString()));
-//
-//        System.out.println(res);
-        
-//        it.load(it.read("filter [equal? (mod ? 2) 1] [1 2 3 4]"));
+//        Node ast = it.read(input2);
+//        it.load(ast);
 //        Node res = it.run();
 //        System.out.println(res);
-
-//        String input = "to recurse :i\n"
-//                + "print :i\n"
-//                + "recurse :i + 1\n"
-//                + "end\n"
-//                + "\n"
-//                + "recurse 1\n";
-//
-//        it.load(it.read(input));
-//        Node res = it.run();
-//        System.out.println(res);
-        
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("to pausetest").append("\n");
-//        sb.append("if (1 > 0) [pause print \"two]").append("\n");
-//        sb.append("pause").append("\n");
-//        sb.append("print \"three").append("\n");
-//        sb.append("end").append("\n");
-//        sb.append("\n");
-//        sb.append("print \"one").append("\n");
-//        sb.append("pause").append("\n");
-//        sb.append("pausetest").append("\n");
-//        it.run(it.read(sb.toString()));
-//        it.resume();
-//        it.resume();
-//        it.resume();
-//        String input = "[print butfirst [one two]]\n";
-//        Node list = it.read(input);
-//        Node prog = it.read(list.getChildren().get(0).toList());
-//        it.run(prog);
-//        System.out.println(prog.toString());
-//        String input = "print butfirst [one two]\n";
-//        Node prog = it.read(input);
-//        System.out.println(prog.toString());
-//        Repl2 repl = new Repl2();
-//        repl.runPrompt();
-//        String input = "to listit\n"
-//                + "if (1 > 0) [ print \"one pause print butfirst [one two] print \"three ]\n"
-//                + "end\n"
-//                + "\n"
-//                + "listit\n";
-//        Node res = it.run(it.read(input));
-//        it.resume();
-//        String input = "print \"one pause print butfirst [one two] print \"three\n";
-////        String input = "run [print \"one  pause print butfirst [one two] print \"three]\n";
-//
-//        Node res = it.run(it.read(input));
-//        it.resume();
     }
 }
