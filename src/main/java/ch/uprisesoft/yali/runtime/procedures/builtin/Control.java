@@ -128,27 +128,52 @@ public class Control implements ProcedureProvider {
         return newVar;
     }
 
+    private java.util.List<Node> ifexprsToRun;
+
     public Node ifexpr(Scope scope, java.util.List<Node> args) {
         Node result = Node.none();
-        Node condition = args.get(0);
-        Node iftrue = args.get(1);
 
-        if (!condition.type().equals(NodeType.BOOLEAN)) {
-            throw new NodeTypeException(condition, condition.type(), NodeType.BOOLEAN);
+        if (ifexprsToRun == null) {
+
+            ifexprsToRun = new ArrayList<>();
+
+            Node condition = args.get(0);
+            Node iftrue = args.get(1);
+
+            if (!condition.type().equals(NodeType.BOOLEAN)) {
+                throw new NodeTypeException(condition, condition.type(), NodeType.BOOLEAN);
+            }
+
+            if (condition.toBooleanWord().getBoolean()) {
+                Node ast = it.read(iftrue.toList());
+                ifexprsToRun.addAll(ast.getChildren());
+//                result = it.output(run(scope, iftrue.toList()));
+            } else {
+                result = it.output(Node.nil());
+                return Node.nil();
+            }
+
         }
 
-        if (condition.toBooleanWord().getBoolean()) {
-            result = it.output(run(scope, iftrue.toList()));
-        } else {
-            result = it.output(Node.nil());
+        if (!ifexprsToRun.isEmpty()) {
+            Call next = ifexprsToRun.remove(0).toProcedureCall();
+            it.schedule(next);
         }
 
         return result;
     }
 
+    private Node ifexprFinished(Scope scope, Node result) {
+        if (ifexprsToRun.isEmpty()) {
+            ifexprsToRun = null;
+            return Node.bool(false);
+        } else {
+            return Node.bool(true);
+        }
+    }
+
     public Node ifelseexpr(Scope scope, java.util.List<Node> args) {
         Node result = Node.none();
-//        it.apply(args.get(0));
         Node condition = args.get(0);
         Node iftrue = args.get(1);
         Node iffalse = args.get(2);
@@ -167,15 +192,10 @@ public class Control implements ProcedureProvider {
     }
 
     public Node repeat(Scope scope, java.util.List<Node> args) {
-
         Node control = args.get(0);
         Node block = args.get(1);
 
         if (!control.type().equals(NodeType.INTEGER)) {
-//            Node res = Node.none();
-//            it.apply(control);
-//            res = it.result();
-
             if (!control.type().equals(NodeType.INTEGER)) {
                 throw new NodeTypeException(control, control.type(), NodeType.INTEGER);
             }
@@ -196,31 +216,27 @@ public class Control implements ProcedureProvider {
     }
 
     private java.util.List<Node> proceduresToRun;
+
     public Node run(Scope scope, java.util.List<Node> args) {
 
         Node result = Node.none();
-        
-        if(proceduresToRun == null) {
-//            System.out.println("START RUN: " + args.get(0).toList());
+
+        if (proceduresToRun == null) {
             proceduresToRun = new ArrayList<>();
             Node ast = it.read(args.get(0).toList());
             proceduresToRun.addAll(ast.getChildren());
         }
-        
+
         Call next = proceduresToRun.remove(0).toProcedureCall();
-//        System.out.println("NEXT: " + next);
         it.schedule(next);
-        
-//        result = run(scope, args.get(0).toList());
+
         return result;
     }
 
     private Node run(Scope scope, ch.uprisesoft.yali.ast.node.List args) {
 
         Node result = Node.none();
-        
-//        System.out.println("START RUN: " + args);
-        
+                
         result = it.runBounded(
                 it.read(
                         args
@@ -230,16 +246,12 @@ public class Control implements ProcedureProvider {
     }
     
     private Node runFinished(Scope scope, Node result) {
-        if(proceduresToRun.isEmpty()) {
-//            System.out.println("FINISHED");
+        if (proceduresToRun.isEmpty()) {
             proceduresToRun = null;
             return Node.bool(false);
         } else {
-//            System.out.println("NOT FINISHED");
             return Node.bool(true);
         }
-//        System.out.println("FINISHED RUN: " + result);
-//        return result;
     }
 
     public Node output(Scope scope, java.util.List<Node> args) {
@@ -269,7 +281,7 @@ public class Control implements ProcedureProvider {
         it.env().define(new Procedure("output", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none(), "__block__"));
         it.env().define(new Procedure("stop", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none()));
         it.env().define(new Procedure("ifelse", (scope, val) -> this.ifelseexpr(scope, val), (scope, val) -> Node.none(), "__condition__", "__iftrue__", "__iffalse__").macro());
-        it.env().define(new Procedure("if", (scope, val) -> this.ifexpr(scope, val), (scope, val) -> Node.none(), "__condition__", "__iftrue__").macro());
+        it.env().define(new Procedure("if", (scope, val) -> this.ifexpr(scope, val), (scope, val) -> this.ifexprFinished(scope, val), "__condition__", "__iftrue__").macro());
         it.env().define(new Procedure("pause", (scope, val) -> this.pause(scope, val), (scope, val) -> Node.none()).macro());
 
         return it;
