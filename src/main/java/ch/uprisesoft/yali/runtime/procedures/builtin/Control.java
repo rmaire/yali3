@@ -176,7 +176,7 @@ public class Control implements ProcedureProvider {
 
         if (ifelseexprsToRun == null) {
             ifelseexprsToRun = new ArrayList<>();
-            
+
             Node condition = args.get(0);
             Node iftrue = args.get(1);
             Node iffalse = args.get(2);
@@ -190,7 +190,7 @@ public class Control implements ProcedureProvider {
             } else {
                 result = run(scope, iffalse.toList());
             }
-            
+
             if (condition.toBooleanWord().getBoolean()) {
                 Node ast = it.read(iftrue.toList());
                 ifelseexprsToRun.addAll(ast.getChildren());
@@ -217,29 +217,52 @@ public class Control implements ProcedureProvider {
         }
     }
 
-    // TODO
-    public Node repeat(Scope scope, java.util.List<Node> args) {
-        Node control = args.get(0);
-        Node block = args.get(1);
+    private java.util.List<Node> repeatexprToRun;
 
-        if (!control.type().equals(NodeType.INTEGER)) {
+    public Node repeat(Scope scope, java.util.List<Node> args) {
+        Node result = Node.none();
+
+        if (repeatexprToRun == null) {
+            repeatexprToRun = new ArrayList<>();
+            
+            Node control = args.get(0);
+            Node block = args.get(1);
+
             if (!control.type().equals(NodeType.INTEGER)) {
-                throw new NodeTypeException(control, control.type(), NodeType.INTEGER);
+                if (!control.type().equals(NodeType.INTEGER)) {
+                    throw new NodeTypeException(control, control.type(), NodeType.INTEGER);
+                }
+            }
+
+            if (!block.type().equals(NodeType.LIST)) {
+                throw new NodeTypeException(block, block.type(), NodeType.LIST);
+            }
+
+            Integer idx = control.toIntegerWord().getInteger();
+            result = Node.nil();
+            
+            for (int i = 0; i < idx; i++) {
+                Node ast = it.read(block.toList());
+                repeatexprToRun.addAll(ast.getChildren());
+//                result = run(scope, block.toList());
             }
         }
-
-        if (!block.type().equals(NodeType.LIST)) {
-            throw new NodeTypeException(block, block.type(), NodeType.LIST);
-        }
-
-        Integer idx = control.toIntegerWord().getInteger();
-        Node result = Node.nil();
-
-        for (int i = 0; i < idx; i++) {
-            result = run(scope, block.toList());
+        
+        if (!repeatexprToRun.isEmpty()) {
+            Call next = repeatexprToRun.remove(0).toProcedureCall();
+            it.schedule(next);
         }
 
         return result;
+    }
+    
+    private Node repeatexprFinished(Scope scope, Node result) {
+        if (repeatexprToRun.isEmpty()) {
+            repeatexprToRun = null;
+            return Node.bool(false);
+        } else {
+            return Node.bool(true);
+        }
     }
 
     private java.util.List<Node> proceduresToRun;
@@ -303,7 +326,7 @@ public class Control implements ProcedureProvider {
         it.env().define(new Procedure("make", (scope, val) -> this.make(scope, val), (scope, val) -> Node.none(), "__name__", "__value__").macro());
         it.env().define(new Procedure("local", (scope, val) -> this.local(scope, val), (scope, val) -> Node.none(), "__name__").macro());
         it.env().define(new Procedure("localmake", (scope, val) -> this.localmake(scope, val), (scope, val) -> Node.none(), "__name__", "__value__").macro());
-        it.env().define(new Procedure("repeat", (scope, val) -> this.repeat(scope, val), (scope, val) -> Node.none(), "__control__", "__block__").macro());
+        it.env().define(new Procedure("repeat", (scope, val) -> this.repeat(scope, val), (scope, val) -> this.repeatexprFinished(scope, val), "__control__", "__block__").macro());
         it.env().define(new Procedure("run", (scope, val) -> this.run(scope, val), (scope, val) -> this.runFinished(scope, val), "__block__").macro());
         it.env().define(new Procedure("output", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none(), "__block__"));
         it.env().define(new Procedure("stop", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none()));
