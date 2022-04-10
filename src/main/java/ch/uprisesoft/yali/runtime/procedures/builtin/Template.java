@@ -35,6 +35,7 @@ public class Template implements ProcedureProvider {
 
     private Interpreter it;
 
+    // TODO
     public Node map(Scope scope, java.util.List<Node> args) {
         Node template = Node.none();
 
@@ -101,6 +102,7 @@ public class Template implements ProcedureProvider {
         }
     }
 
+    // TODO
     public Node filter(Scope scope, java.util.List<Node> args) {
 
         Node template = Node.none();
@@ -176,6 +178,7 @@ public class Template implements ProcedureProvider {
         }
     }
 
+    // TODO
     public Node find(Scope scope, java.util.List<Node> args) {
         Node template = Node.none();
 
