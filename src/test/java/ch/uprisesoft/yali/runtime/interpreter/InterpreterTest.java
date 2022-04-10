@@ -248,14 +248,14 @@ public class InterpreterTest {
                 + "if (:i > 0) [recurse :i - 1]\n"
                 + "end\n"
                 + "\n"
-                + "recurse 800\n";
+                + "recurse 8000\n";
 
         Node res = it.run(it.read(input));
         
-        assertThat(outputs.size(), is(801));
+        assertThat(outputs.size(), is(8001));
         
-        for(int i = 800; i >= 0; i--) {
-            assertThat(outputs.get(800-i), is(i + "\n"));
+        for(int i = 8000; i >= 0; i--) {
+            assertThat(outputs.get(8000-i), is(i + "\n"));
         }        
     }
     
