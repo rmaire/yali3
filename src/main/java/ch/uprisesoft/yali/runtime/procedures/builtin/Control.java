@@ -201,14 +201,14 @@ public class Control implements ProcedureProvider {
         Node result = Node.none();
         
         if(proceduresToRun == null) {
-            System.out.println("START RUN: " + args.get(0).toList());
+//            System.out.println("START RUN: " + args.get(0).toList());
             proceduresToRun = new ArrayList<>();
             Node ast = it.read(args.get(0).toList());
             proceduresToRun.addAll(ast.getChildren());
         }
         
         Call next = proceduresToRun.remove(0).toProcedureCall();
-        System.out.println("NEXT: " + next);
+//        System.out.println("NEXT: " + next);
         it.schedule(next);
         
 //        result = run(scope, args.get(0).toList());
@@ -219,7 +219,7 @@ public class Control implements ProcedureProvider {
 
         Node result = Node.none();
         
-        System.out.println("START RUN: " + args);
+//        System.out.println("START RUN: " + args);
         
         result = it.runBounded(
                 it.read(
@@ -231,11 +231,11 @@ public class Control implements ProcedureProvider {
     
     private Node runFinished(Scope scope, Node result) {
         if(proceduresToRun.isEmpty()) {
-            System.out.println("FINISHED");
+//            System.out.println("FINISHED");
             proceduresToRun = null;
             return Node.bool(false);
         } else {
-            System.out.println("NOT FINISHED");
+//            System.out.println("NOT FINISHED");
             return Node.bool(true);
         }
 //        System.out.println("FINISHED RUN: " + result);

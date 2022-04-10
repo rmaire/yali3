@@ -201,13 +201,13 @@ public class Interpreter implements OutputObserver {
     }
 
     public boolean tick() {
-        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size() + ", Env size: " + env.size());
+//        System.out.println("Stack size: " + stack.size() + ", Program size: " + program.size() + ", Env size: " + env.size());
 
         /*
         Global Program state
          */
         if (paused) {
-            System.out.println("LEAVING TICK WITH false IN paused");
+//            System.out.println("LEAVING TICK WITH false IN paused");
             return false;
         }
 
@@ -219,13 +219,13 @@ public class Interpreter implements OutputObserver {
 
                 if (bounded) {
                     restoreStack();
-                    System.out.println("LEAVING TICK WITH true IN stack.empty() -> program.isEmpty() -> bounded");
+//                    System.out.println("LEAVING TICK WITH true IN stack.empty() -> program.isEmpty() -> bounded");
                     return true;
                 }
-                System.out.println("LEAVING TICK WITH false IN stack.empty() -> program.isEmpty()");
+//                System.out.println("LEAVING TICK WITH false IN stack.empty() -> program.isEmpty()");
                 return false;
             } else {
-                System.out.println("LEAVING TICK WITH true IN stack.empty() -> !program.isEmpty()");
+//                System.out.println("LEAVING TICK WITH true IN stack.empty() -> !program.isEmpty()");
                 schedule(program.remove(0));
                 return true;
             }
@@ -239,24 +239,24 @@ public class Interpreter implements OutputObserver {
         // previous call. Has to be done before argument handling.
         if (stack.peek().evaluated()) {
             if(stack.peek().getName().equals("run")) {
-                System.out.println("RUN FINISHED IN TICK()");
+//                System.out.println("RUN FINISHED IN TICK()");
             }
             unschedule();
             if (stack.empty() && !program.isEmpty()) {
-                System.out.println("LEAVING TICK WITH true IN stack.peek().evaluated() -> stack.empty() && !program.isEmpty()");
+//                System.out.println("LEAVING TICK WITH true IN stack.peek().evaluated() -> stack.empty() && !program.isEmpty()");
                 return true;
             } else if (stack.empty() && program.isEmpty()) {
-                System.out.println("LEAVING TICK WITH false IN stack.peek().evaluated() -> stack.empty() && program.isEmpty()");
+//                System.out.println("LEAVING TICK WITH false IN stack.peek().evaluated() -> stack.empty() && program.isEmpty()");
                 return false;
             } else if (stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()) {
-                System.out.println("LEAVING TICK WITH false IN stack.peek().evaluated() -> stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()");
+//                System.out.println("LEAVING TICK WITH false IN stack.peek().evaluated() -> stack.size() == 1 && stack.peek().evaluated() && program.isEmpty()");
                 return false;
             } else if (stack.peek().hasMoreParameters()) {
-                System.out.println("LEAVING TICK WITH true IN stack.peek().evaluated() -> stack.peek().hasMoreParameters()");
+//                System.out.println("LEAVING TICK WITH true IN stack.peek().evaluated() -> stack.peek().hasMoreParameters()");
                 stack.peek().arg(lastResult);
                 return true;
             } else {
-                System.out.println("LEAVING TICK WITH true IN stack.peek().evaluated() -> else");
+//                System.out.println("LEAVING TICK WITH true IN stack.peek().evaluated() -> else");
                 return true;
             }
         }
@@ -273,11 +273,11 @@ public class Interpreter implements OutputObserver {
             // If it's not a procedure call, no evaluation is necessary. Add to
             // arguments as-is.
             if (!nextParam.type().equals(NodeType.PROCCALL)) {
-                System.out.println("LEAVING TICK WITH true IN stack.peek().hasMoreParameters() -> !nextParam.type().equals(NodeType.PROCCALL)");
+//                System.out.println("LEAVING TICK WITH true IN stack.peek().hasMoreParameters() -> !nextParam.type().equals(NodeType.PROCCALL)");
                 stack.peek().arg(nextParam);
                 return true;
             } else {
-                System.out.println("LEAVING TICK WITH true IN stack.peek().hasMoreParameters() -> else");
+//                System.out.println("LEAVING TICK WITH true IN stack.peek().hasMoreParameters() -> else");
                 schedule(nextParam.toProcedureCall());
                 return true;
             }
@@ -305,7 +305,7 @@ public class Interpreter implements OutputObserver {
                 call.result(result, env.peek());
                 call.evaluated(true);
             }
-            System.out.println("LEAVING TICK WITH true IN call.definition().isNative() -> true");
+//            System.out.println("LEAVING TICK WITH true IN call.definition().isNative() -> true");
             return true;
         } else {
             if (call.hasMoreCalls()) {
@@ -314,7 +314,7 @@ public class Interpreter implements OutputObserver {
                 call.evaluated(true);
                 call.result(lastResult, env.peek());
             }
-            System.out.println("LEAVING TICK WITH true IN call.definition().isNative() -> false");
+//            System.out.println("LEAVING TICK WITH true IN call.definition().isNative() -> false");
             return true;
         }
     }
