@@ -59,7 +59,6 @@ public class Control implements ProcedureProvider {
 
         Node value = it.env().thing(name);
 
-//        it.tracers().forEach(t -> t.thing(name, value, it.env()));
         return value;
     }
 
@@ -100,7 +99,6 @@ public class Control implements ProcedureProvider {
 
         newVar = args.get(1);
 
-//        it.tracers().forEach(t -> t.make(name, newVar, it.env()));
         it.env().make(name, newVar);
 
         return newVar;
@@ -129,6 +127,7 @@ public class Control implements ProcedureProvider {
     }
 
     private java.util.List<Node> ifexprsToRun;
+
     public Node ifexpr(Scope scope, java.util.List<Node> args) {
         Node result = Node.none();
 
@@ -146,7 +145,6 @@ public class Control implements ProcedureProvider {
             if (condition.toBooleanWord().getBoolean()) {
                 Node ast = it.read(iftrue.toList());
                 ifexprsToRun.addAll(ast.getChildren());
-//                result = it.output(run(scope, iftrue.toList()));
             } else {
                 result = it.output(Node.nil());
                 return Node.nil();
@@ -171,24 +169,52 @@ public class Control implements ProcedureProvider {
         }
     }
 
-    // TODO
+    private java.util.List<Node> ifelseexprsToRun;
+
     public Node ifelseexpr(Scope scope, java.util.List<Node> args) {
         Node result = Node.none();
-        Node condition = args.get(0);
-        Node iftrue = args.get(1);
-        Node iffalse = args.get(2);
 
-        if (!condition.type().equals(NodeType.BOOLEAN)) {
-            throw new NodeTypeException(condition, condition.type(), NodeType.BOOLEAN);
+        if (ifelseexprsToRun == null) {
+            ifelseexprsToRun = new ArrayList<>();
+            
+            Node condition = args.get(0);
+            Node iftrue = args.get(1);
+            Node iffalse = args.get(2);
+
+            if (!condition.type().equals(NodeType.BOOLEAN)) {
+                throw new NodeTypeException(condition, condition.type(), NodeType.BOOLEAN);
+            }
+
+            if (condition.toBooleanWord().getBoolean()) {
+                result = run(scope, iftrue.toList());
+            } else {
+                result = run(scope, iffalse.toList());
+            }
+            
+            if (condition.toBooleanWord().getBoolean()) {
+                Node ast = it.read(iftrue.toList());
+                ifelseexprsToRun.addAll(ast.getChildren());
+            } else {
+                Node ast = it.read(iffalse.toList());
+                ifelseexprsToRun.addAll(ast.getChildren());
+            }
         }
 
-        if (condition.toBooleanWord().getBoolean()) {
-            result = run(scope, iftrue.toList());
-        } else {
-            result = run(scope, iffalse.toList());
+        if (!ifelseexprsToRun.isEmpty()) {
+            Call next = ifelseexprsToRun.remove(0).toProcedureCall();
+            it.schedule(next);
         }
 
         return result;
+    }
+
+    private Node ifelseexprFinished(Scope scope, Node result) {
+        if (ifelseexprsToRun.isEmpty()) {
+            ifelseexprsToRun = null;
+            return Node.bool(false);
+        } else {
+            return Node.bool(true);
+        }
     }
 
     // TODO
@@ -237,7 +263,7 @@ public class Control implements ProcedureProvider {
     private Node run(Scope scope, ch.uprisesoft.yali.ast.node.List args) {
 
         Node result = Node.none();
-                
+
         result = it.runBounded(
                 it.read(
                         args
@@ -245,7 +271,7 @@ public class Control implements ProcedureProvider {
         );
         return result;
     }
-    
+
     private Node runFinished(Scope scope, Node result) {
         if (proceduresToRun.isEmpty()) {
             proceduresToRun = null;
@@ -281,7 +307,7 @@ public class Control implements ProcedureProvider {
         it.env().define(new Procedure("run", (scope, val) -> this.run(scope, val), (scope, val) -> this.runFinished(scope, val), "__block__").macro());
         it.env().define(new Procedure("output", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none(), "__block__"));
         it.env().define(new Procedure("stop", (scope, val) -> this.output(scope, val), (scope, val) -> Node.none()));
-        it.env().define(new Procedure("ifelse", (scope, val) -> this.ifelseexpr(scope, val), (scope, val) -> Node.none(), "__condition__", "__iftrue__", "__iffalse__").macro());
+        it.env().define(new Procedure("ifelse", (scope, val) -> this.ifelseexpr(scope, val), (scope, val) -> this.ifelseexprFinished(scope, val), "__condition__", "__iftrue__", "__iffalse__").macro());
         it.env().define(new Procedure("if", (scope, val) -> this.ifexpr(scope, val), (scope, val) -> this.ifexprFinished(scope, val), "__condition__", "__iftrue__").macro());
         it.env().define(new Procedure("pause", (scope, val) -> this.pause(scope, val), (scope, val) -> Node.none()).macro());
 
