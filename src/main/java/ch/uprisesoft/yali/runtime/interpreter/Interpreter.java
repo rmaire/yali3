@@ -299,6 +299,10 @@ public class Interpreter implements OutputObserver {
             return true;
         }
     }
+    
+    private boolean nodeIsTrue(Node node) {
+        return node.type().equals(NodeType.BOOLEAN) && node.toBooleanWord().getBoolean();
+    }
 
     private Call unschedule() {
         Call call = stack.pop();
