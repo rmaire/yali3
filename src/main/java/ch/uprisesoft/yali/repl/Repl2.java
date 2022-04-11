@@ -75,7 +75,7 @@ public class Repl2 implements InputGenerator, OutputObserver {
         output.println("Welcome to Yali. To exit type ctrl-D or bye and press <ENTER>");
 
         while (true) {
-            String line = null;
+            String line = "";
             try {
                 line = reader.readLine("> ");
             } catch (UserInterruptException e) {
@@ -115,6 +115,10 @@ public class Repl2 implements InputGenerator, OutputObserver {
     }
 
     private void run(String source) {
+        if(source == null || source.equals("")) {
+            return;
+        }
+        
         try {
             Node result = interpreter.run(interpreter.read(source));
             output.println("; " + result.toString());
