@@ -60,8 +60,8 @@ public class Main {
         MockTurtleManager mtm = new MockTurtleManager();
         mtm.registerProcedures(it);
         
-        Repl2 repl = new Repl2();
-        repl.runPrompt();
+//        Repl2 repl = new Repl2();
+//        repl.runPrompt();
         
         String input1 = "to testit\n"
                 + "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n"
@@ -86,9 +86,15 @@ public class Main {
         
         String input4 = "run [make \"test 3 + 4 print :test print \"BLAAA!]\n";
         
-//        Node ast = it.read(input2);
-//        it.load(ast);
-//        Node res = it.run();
-//        System.out.println(res);
+        String input5 = "to testit :i\n"
+                + "if (:i < 10) [print \"first if (:i > 5) [print \"yes]]\n"
+                + "end\n"
+                + "\n"
+                + "testit 6\n";
+        
+        Node ast = it.read(input5);
+        it.load(ast);
+        Node res = it.run();
+        System.out.println(res);
     }
 }
