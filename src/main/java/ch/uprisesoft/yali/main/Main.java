@@ -60,41 +60,8 @@ public class Main {
         MockTurtleManager mtm = new MockTurtleManager();
         mtm.registerProcedures(it);
         
-//        Repl2 repl = new Repl2();
-//        repl.runPrompt();
-        
-        String input1 = "to testit\n"
-                + "ifelse (1 > 0) [print \"Hello!] [print \"Nope!]\n"
-                + "end\n"
-                + "print \"Bye!\n"
-                + "print \"Well?\n"
-                + "testit\n";
-        
-        String input2 = "to recurse :i\n"
-                + "print :i\n"
-                + "recurse :i + 1\n"
-                + "end\n"
-                + "\n"
-                + "recurse 1\n";
-        
-        String input3 = "to recurse :i\n"
-                + "print :i\n"
-                + "if (:i > 0) [recurse :i - 1]\n"
-                + "end\n"
-                + "\n"
-                + "recurse 8000\n";
-        
-        String input4 = "run [make \"test 3 + 4 print :test print \"BLAAA!]\n";
-        
-        String input5 = "to testit :i\n"
-                + "if (:i < 10) [print \"first if (:i > 5) [print \"yes]]\n"
-                + "end\n"
-                + "\n"
-                + "testit 6\n";
-        
-        Node ast = it.read(input5);
-        it.load(ast);
-        Node res = it.run();
-//        System.out.println(res);
+        Repl2 repl = new Repl2();
+        repl.runPrompt();
+
     }
 }
