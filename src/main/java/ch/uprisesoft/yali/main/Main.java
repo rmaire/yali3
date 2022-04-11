@@ -95,6 +95,6 @@ public class Main {
         Node ast = it.read(input5);
         it.load(ast);
         Node res = it.run();
-        System.out.println(res);
+//        System.out.println(res);
     }
 }
