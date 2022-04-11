@@ -105,9 +105,9 @@ public class Repl2 implements InputGenerator, OutputObserver {
                 } else {
                     editResult = editProc();
                 }
-                
+
                 interpreter.read(editResult);
-                
+
             } else {
                 run(line);
             }
@@ -115,10 +115,10 @@ public class Repl2 implements InputGenerator, OutputObserver {
     }
 
     private void run(String source) {
-        if(source == null || source.equals("")) {
+        if (source == null || source.equals("")) {
             return;
         }
-        
+
         try {
             Node result = interpreter.run(interpreter.read(source));
             output.println("; " + result.toString());
@@ -179,13 +179,19 @@ public class Repl2 implements InputGenerator, OutputObserver {
         }
 
 //        Files.write(file.toPath(), fun.);
+//        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+//            Process process = new ProcessBuilder()
+//                    .command("notepad.exe", file.toPath().toAbsolutePath().toString())
+//                    .directory(file.toPath().getParent().toFile())
+//                    .redirectErrorStream(true)
+//                    .start();
+//            process.waitFor();
+//        } else {
+//            Desktop.getDesktop().edit(file);
+//        }
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-            Process process = new ProcessBuilder()
-                    .command("notepad.exe", file.toPath().toAbsolutePath().toString())
-                    .directory(file.toPath().getParent().toFile())
-                    .redirectErrorStream(true)
-                    .start();
-            process.waitFor();
+            String cmd = "rundll32 url.dll,FileProtocolHandler " + file.getCanonicalPath();
+            Runtime.getRuntime().exec(cmd);
         } else {
             Desktop.getDesktop().edit(file);
         }
@@ -195,7 +201,6 @@ public class Repl2 implements InputGenerator, OutputObserver {
                 .collect(Collectors.joining("\n"));
 
 //        System.out.println(newContent);
-
         return newContent;
     }
 
@@ -220,7 +225,6 @@ public class Repl2 implements InputGenerator, OutputObserver {
                 .collect(Collectors.joining("\n"));
 
 //        System.out.println(newContent);
-
         return newContent;
     }
 
