@@ -16,6 +16,8 @@
 package ch.uprisesoft.yali.runtime.interpreter;
 
 import ch.uprisesoft.yali.ast.node.Node;
+import ch.uprisesoft.yali.ast.node.NodeType;
+import ch.uprisesoft.yali.exception.NodeTypeException;
 import ch.uprisesoft.yali.helper.ObjectMother;
 import ch.uprisesoft.yali.runtime.io.InputGenerator;
 import ch.uprisesoft.yali.runtime.io.OutputObserver;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 
@@ -75,171 +78,35 @@ public class InterpreterTest {
         it = om.getInterpreter();
     }
 
-//    @Test
-//    public void testInterpreter() {
-//        Node result = it.eval("print [Hello World!?!]");
-//
-//        assertThat(result.type(), is(NodeType.NIL));
-//        assertThat(outputs.size(), is(1));
-//        assertThat(outputs.get(0), is("Hello World!?!\n"));
-//    }
-//
-//    @Test
-//    public void testFunDefAndCallSameString() {
-//        String input = "to testfun :in\n"
-//                + "print :in\n"
-//                + "end\n"
-//                + "\n"
-//                + "testfun \"testit!!!";
-//        it.eval(input);
-//
-//        assertThat(outputs.size(), is(1));
-//        assertThat(outputs.get(0), is("testit!!!\n"));
-//    }
-//
-//    @Test
-//    public void testFunDefAndCall() {
-//        String input = "to testfun :in\n"
-//                + "print :in\n"
-//                + "end\n";
-//        it.eval(input);
-//
-//        input = "testfun \"testit!!!";
-//        it.eval(input);
-//
-//        assertThat(outputs.size(), is(1));
-//        assertThat(outputs.get(0), is("testit!!!\n"));
-//    }
-//
-//    @Test
-//    public void testNestedFunDefAndCall() {
-//        String input = "to testfun :in\n"
-//                + "testfun2\n"
-//                + "end\n"
-//                + "\n"
-//                + "to testfun2\n"
-//                + "print \"testit!!!\n"
-//                + "end\n"
-//                + "\n"
-//                + "testfun";
-//        it.eval(input);
-//
-//        assertThat(outputs.get(0), is("testit!!!\n"));
-//    }
-//
-//    @Test
-//    public void testUndefinedFunction() {
-//        String input = "blabla";
-//
-//        NodeTypeException nte = assertThrows(NodeTypeException.class, () -> it.eval(input));
-//
-//        assertThat(nte.getExpected().get(0), is(NodeType.FUNCALL));
-//        assertThat(nte.getReceived(), is(NodeType.SYMBOL));
-//        assertThat(nte.getNode().getToken().getLexeme(), is("blabla"));
-//        assertThat(nte.getNode().getLine(), is(1));
-//        assertThat(nte.getNode().getCol(), is(0));
-//
-//    }
-//
-//    @Test
-//    public void testUndefinedFunctionInFunction() {
-//        String input = "to testfun" + "\n"
-//                + "blabla" + "\n"
-//                + "end" + "\n"
-//                + "" + "\n"
-//                + "testfun" + "\n";
-//
-//        NodeTypeException nte = assertThrows(NodeTypeException.class, () -> it.eval(input));
-//
-//        assertThat(nte.getExpected().get(0), is(NodeType.FUNCALL));
-//        assertThat(nte.getReceived(), is(NodeType.SYMBOL));
-//        assertThat(nte.getNode().getToken().getLexeme(), is("blabla"));
-//        assertThat(nte.getNode().getLine(), is(2));
-//        assertThat(nte.getNode().getCol(), is(0));
-//    }
-//
-//    @Test
-//    public void testUndefinedFunctionInFunctionAsArgument() {
-//        String input = "to testfun" + "\n"
-//                + "print blabla" + "\n"
-//                + "end" + "\n"
-//                + "" + "\n"
-//                + "testfun" + "\n";
-//
-//        NodeTypeException nte = assertThrows(NodeTypeException.class, () -> it.eval(input));
-//
-//        assertTrue(nte.getExpected().contains(NodeType.FUNCALL));
-//        assertThat(nte.getReceived(), is(NodeType.SYMBOL));
-//        assertThat(nte.getNode().getToken().getLexeme(), is("blabla"));
-//        assertThat(nte.getNode().getLine(), is(2));
-//        assertThat(nte.getNode().getCol(), is(6));
-//    }
-//
-//    @Test
-//    public void testDynamicScope() {
-//        String input = "make \"testvar \"one\n"
-//                + "to testfun1 :in\n"
-//                + "make \"testvar \"two\n"
-//                + "testfun2\n"
-//                + "end\n"
-//                + "\n"
-//                + "to testfun2\n"
-//                + "print :testvar\n"
-//                + "end\n"
-//                + "\n"
-//                + "testfun1\n";
-//
-//        it.eval(input);
-//
-//        assertThat(outputs.size(), is(1));
-//        assertThat(outputs.get(0), is("two\n"));
-//    }
-//
-//    @Test
-//    public void testNestedList() {
-//        String testInput = "output [:one [\"two ?3]]";
-//
-//        Node res = it.eval(testInput);
-//
-//        assertThat(res.type(), is(NodeType.LIST));
-//        assertThat(res.getChildren().get(0).type(), is(NodeType.SYMBOL));
-//        assertThat(res.getChildren().get(0).toSymbolWord().getSymbol(), is(":one"));
-//        assertThat(res.getChildren().get(1).type(), is(NodeType.LIST));
-//        assertThat(res.getChildren().get(1).getChildren().get(0).type(), is(NodeType.SYMBOL));
-//        assertThat(res.getChildren().get(1).getChildren().get(0).toSymbolWord().getSymbol(), is("\"two"));
-//        assertThat(res.getChildren().get(1).getChildren().get(1).type(), is(NodeType.SYMBOL));
-//        assertThat(res.getChildren().get(1).getChildren().get(1).toSymbolWord().getSymbol(), is("?3"));
-//    }
-//
-//    @Test
-//    public void testOutput() {
-//        String input = "to stoptest\n"
-//                + "make \"test \"one\n"
-//                + "output \"three\n"
-//                + "make \"test \"two\n"
-//                + "end\n"
-//                + "\n"
-//                + "stoptest\n"
-//                + "print :test\n"
-//                + "stoptest\n";
-//
-//        Node res = it.eval(input);
-//
-//        assertThat(outputs.size(), is(1));
-//        assertThat(outputs.get(0), is("one\n"));
-//        assertThat(res.type(), is(NodeType.QUOTE));
-//        assertThat(res.toQuotedWord().getQuote(), is("three"));
-//    }
-//    @Test
-//    public void testAlias() {
-//        String input = "alias \"print \"drucke\n"
-//                + "drucke \"test\n";
-//
-//        it.eval(input);
-//
-//        assertThat(outputs.size(), is(1));
-//        assertThat(outputs.get(0), is("test\n"));
-//    }
+    @Test
+    public void testNestedFunDefAndCall() {
+        String input = "to testfun :in\n"
+                + "testfun2\n"
+                + "end\n"
+                + "\n"
+                + "to testfun2\n"
+                + "print \"testit!!!\n"
+                + "end\n"
+                + "\n"
+                + "testfun";
+        it.run(it.read(input));
+
+        assertThat(outputs.get(0), is("testit!!!\n"));
+    }
+
+    @Test
+    public void testUndefinedFunction() {
+        String input = "blabla";
+
+        NodeTypeException nte = assertThrows(NodeTypeException.class, () -> it.run(it.read(input)));
+
+        assertThat(nte.getExpected().get(0), is(NodeType.PROCCALL));
+        assertThat(nte.getReceived(), is(NodeType.SYMBOL));
+        assertThat(nte.getNode().token().get(0).getLexeme(), is("blabla"));
+        assertThat(nte.getNode().getLine(), is(1));
+        assertThat(nte.getNode().getCol(), is(0));
+
+    }
     
     @Test
     public void testRecursion2() {
@@ -259,20 +126,19 @@ public class InterpreterTest {
         }        
     }
     
-//    @Test
-//    public void testOutput() {
-//        String input = "to testoutput :i\n"
-//                + "print \"one\n"
-//                + "output :i\n"
-//                + "print \"two\n"
-//                + "end\n"
-//                + "\n"
-//                + "testoutput \"test\n";
-//        
-//        Node res = it.eval(input);
-//
-//        assertThat(outputs.size(), is(1));
-//        assertThat(outputs.get(0), is("one\n"));
-//    }
+    @Test
+    public void testNestedRunList() {
+        String input = "to testit :i\n"
+                + "if (:i < 10) [print \"first if (:i > 5) [print \"yes]]\n"
+                + "end\n"
+                + "\n"
+                + "testit 6\n";
+
+        Node res = it.run(it.read(input));
+        
+        assertThat(outputs.size(), is(2));
+        assertThat(outputs.get(0), is("first\n"));
+        assertThat(outputs.get(1), is("yes\n"));
+    }
 
 }
